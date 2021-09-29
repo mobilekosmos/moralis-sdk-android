@@ -1,0 +1,13 @@
+// Repositories used by convention by every subproject can be declared here.
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+    }
+}
+include ':sample'
+include ':moralis-lib'
+//include ':bolts-tasks'
+//include ':parse'

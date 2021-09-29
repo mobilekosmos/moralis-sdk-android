@@ -1,0 +1,74 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+        minSdk 28
+        targetSdk 31
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+ext {
+    moralisVersion = "master-SNAPSHOT"
+    moralisWalletConnectVersion = "0.9.9.1"
+    //moralisVersion = "1"
+    versions = [
+            kotlin                    : "1.5.31",
+            moshi                     : '1.12.0',
+            okhttp                    : '4.9.1',
+    ]
+}
+
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    api "com.github.mobilekosmos.Parse-SDK-Android:parse:$moralisVersion"
+    api "com.github.mobilekosmos:kotlin-walletconnect-lib:$moralisWalletConnectVersion"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
+
+    // Needed for wallet-connect-code
+    //------------------------------------------------------------------------
+    implementation "org.java-websocket:Java-WebSocket:1.5.2"
+
+    // KHex is a Kotlin multiplatform library to deal with hexadecimal encoding and decoding.
+    implementation "com.github.komputing:khex:$versions.khex"
+
+    implementation "com.squareup.moshi:moshi:$versions.moshi"
+    implementation "com.squareup.moshi:moshi-kotlin:$versions.moshi"
+
+    implementation "com.squareup.okhttp3:okhttp:$versions.okhttp"
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
+
+    // We need to specify this extra because the kotlin plugin adds an older version leading
+    // to a warning about using different kotlin versions.
+//    implementation "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
+}
