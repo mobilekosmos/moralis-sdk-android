@@ -32,7 +32,7 @@ android {
 }
 
 ext {
-    moralisVersion = "master-SNAPSHOT"
+    moralisVersion = "moralis-SNAPSHOT"
     moralisWalletConnectVersion = "0.9.9.1"
     //moralisVersion = "1"
     versions = [
