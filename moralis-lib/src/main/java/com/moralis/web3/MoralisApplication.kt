@@ -15,11 +15,16 @@ import java.util.*
 open class MoralisApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        init()
+    }
+
+    fun init() {
         initMoshi()
         initClient()
         initBridge()
         initSessionStorage()
         appName = getApplicationName()
+        appPackage = applicationInfo.packageName
     }
 
     private fun getApplicationName(): String {
@@ -49,6 +54,7 @@ open class MoralisApplication : Application() {
         private lateinit var bridge: BridgeServer
         private lateinit var storage: WCSessionStore
         private lateinit var appName: String
+        private lateinit var appPackage : String
         lateinit var config: Session.FullyQualifiedConfig
         lateinit var session: Session
 
@@ -61,8 +67,12 @@ open class MoralisApplication : Application() {
                     MoshiPayloadAdapter(moshi),
                     storage,
                     OkHttpTransport.Builder(client, moshi),
-                    Session.PeerMeta(url = appName, name = "Example App",
-                    description = "description")
+                    Session.PeerMeta(
+                        url = appPackage,
+                        name = appName,
+                        description = appName,
+                        icons = listOf("https://www.google.com/favicon.ico")
+                    )
             )
             session.offer()
         }

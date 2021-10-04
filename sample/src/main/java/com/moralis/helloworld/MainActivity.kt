@@ -12,14 +12,18 @@ import kotlinx.coroutines.launch
 import com.moralis.helloworld.databinding.MainBinding
 import com.moralis.web3.MoralisApplication
 
+/**
+ * This is a more elaborated example with more UI elements.
+ */
 class MainActivity : Activity(), Moralis.MoralisCallback {
 
     private val mUiScope = CoroutineScope(Dispatchers.Main)
     private lateinit var mMainBinding: MainBinding
-    private val mMoralis: Moralis = Moralis()
+    private val TAG = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate")
 
         // Programming is so 1.0 yet, if you for example then set the view listener using the binding
         // the listener won't work. But using setContentView(mMainBinding.root) instead has also the
@@ -32,12 +36,15 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
     }
 
     override fun onStart() {
+        Log.d(TAG, "onStart")
         super.onStart()
-        mMoralis.onStart(this)
+        Moralis.onStart(this)
 
         //val button = findViewById<Button>(R.id.login_button)
         mMainBinding.signUpButton.setOnClickListener {
-            mMoralis.signUp(this) {
+
+            // TODO: think about best signingMessage.
+            Moralis.authenticate(this, "Wallet Authentication Interface") {
                 if (it != null && it.isNew) {
                     Toast.makeText(
                         this@MainActivity,
@@ -52,15 +59,15 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
                     ).show()
                 }
             }
-            Toast.makeText(
-                this@MainActivity,
-                "Connecting to wallet, please wait...",
-                Toast.LENGTH_SHORT
-            ).show()
+
+//            Toast.makeText( this@MainActivity, "Connecting to wallet, please wait...",
+//                Toast.LENGTH_SHORT
+//            ).show()
+
         }
 
         mMainBinding.signInButton.setOnClickListener {
-            mMoralis.signIn(this) {
+            Moralis.signIn(this) {
                 if (it != null) {
                     Toast.makeText(
                         this@MainActivity,
@@ -80,13 +87,14 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
         }
 
         mMainBinding.logoutButton.setOnClickListener {
-            mMoralis.logOut()
+            Moralis.logOut()
             adaptUIAfterSessionClosed()
             Toast.makeText(this@MainActivity, "Logged out", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onStatus(status: Moralis.MoralisStatus, accounts: List<String>?) {
+        Log.d(TAG, "onStatus ${status.toString()}")
         when (status) {
             Moralis.MoralisStatus.Approved -> adaptUIAfterSessionApproved(accounts)
             Moralis.MoralisStatus.Closed -> adaptUIAfterSessionClosed()
@@ -100,6 +108,7 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
     }
 
     private fun adaptUIAfterSessionApproved(accounts: List<String>?) {
+        Log.d(TAG, "adaptUIAfterSessionApproved")
         mUiScope.launch {
             mMainBinding.textView.text = "Connected: $accounts"
             mMainBinding.textView.visibility = View.VISIBLE
@@ -111,6 +120,7 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
     }
 
     private fun adaptUIAfterSessionClosed() {
+        Log.d(TAG, "adaptUIAfterSessionClosed")
         mUiScope.launch {
             mMainBinding.textView.visibility = View.GONE
             mMainBinding.signUpButton.visibility = View.VISIBLE
@@ -121,7 +131,8 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
     }
 
     override fun onDestroy() {
-        mMoralis.onDestroy()
+        Log.d(TAG, "onDestroy")
+        Moralis.onDestroy()
         super.onDestroy()
     }
 }
