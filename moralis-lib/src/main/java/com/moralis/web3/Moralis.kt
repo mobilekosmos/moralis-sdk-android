@@ -17,7 +17,7 @@ import org.walletconnect.nullOnThrow
 
 typealias User = ParseUser
 
-class Moralis {
+open class Moralis {
 
     companion object {
         private const val TAG = "Moralis"
@@ -41,18 +41,17 @@ class Moralis {
         fun authenticate(
             context: Context,
             signingMessage: String?,
+            authenticationType: MoralisAuthentication = MoralisAuthentication.Ethereum,
             moralisAuthCallback: (user: User?) -> Unit,
         ) {
             MoralisApplication.resetSession()
 
-            // TODO:
-//            if (MoralisWeb3.isDotAuth(options)) {
-//                return MoralisDot.authenticate(options);
-//            }
-//
-//            if (MoralisWeb3.isElrondAuth(options)) {
-//                return MoralisErd.authenticate(options);
-//            }
+            when (authenticationType) {
+                // TODO
+                MoralisAuthentication.Polkadot -> return MoralisPolkadot.authenticate()
+                MoralisAuthentication.Elrond -> return MoralisElrond.authenticate()
+            }
+
             val data = signingMessage ?: getSigningData()
 
             mCallback = object : Session.Callback {
@@ -63,39 +62,6 @@ class Moralis {
                             context,
                             data
                         )
-                        Session.Status.Closed -> sessionClosed()
-                        Session.Status.Connected -> {
-                            requestConnectionToWallet(context)
-                        }
-                        Session.Status.Disconnected -> {
-                            Log.e(TAG, "onStatus Disconnected")
-                            sessionClosed()
-                        }
-                        is Session.Status.Error -> {
-                            Log.e(TAG, "onStatus Error:" + status.throwable.localizedMessage)
-                        }
-                    }
-                }
-
-                override fun onMethodCall(call: Session.MethodCall) {
-                    Log.d(TAG, "onMethodCall: " + call.id())
-                }
-            }
-            MoralisApplication.session.addCallback(mCallback)
-        }
-
-        /**
-         * Signs in an existing user onto the Moralis Server.
-         */
-        fun signIn(
-            context: Context,
-            moralisAuthCallback: (user: User?) -> Unit
-        ) {
-            MoralisApplication.resetSession()
-            mCallback = object : Session.Callback {
-                override fun onStatus(status: Session.Status) {
-                    when (status) {
-                        Session.Status.Approved -> sessionApprovedSignIn(moralisAuthCallback)
                         Session.Status.Closed -> sessionClosed()
                         Session.Status.Connected -> {
                             requestConnectionToWallet(context)
@@ -134,13 +100,6 @@ class Moralis {
         ) {
             uiScope.launch {
                 signUpToMoralis(moralisAuthCallback, context, signingMessage)
-                Log.d(TAG, "Connected:  ${MoralisApplication.session.approvedAccounts()}")
-            }
-        }
-
-        private fun sessionApprovedSignIn(moralisAuthCallback: (result: User?) -> Unit) {
-            uiScope.launch {
-                signInToMoralis(moralisAuthCallback)
                 Log.d(TAG, "Connected:  ${MoralisApplication.session.approvedAccounts()}")
             }
         }
@@ -241,22 +200,6 @@ class Moralis {
             context.startActivity(i)
         }
 
-        private fun signInToMoralis(moralisAuthCallback: (result: User?) -> Unit) {
-            User.logInInBackground(
-                MoralisApplication.session.approvedAccounts()?.first(),
-                "pass"
-            ) { user, e ->
-                if (user != null) {
-                    // Hooray! The user is logged in.
-                    moralisAuthCallback.invoke(user)
-                } else {
-                    Log.e(TAG, "failed to login: " + e.message)
-                    moralisAuthCallback.invoke(user)
-                    // Signup failed. Look at the ParseException to see what happened.
-                }
-            }
-        }
-
         fun onStart(callback: MoralisCallback) {
             mActivityCallback = callback
             initialSetup()
@@ -279,6 +222,28 @@ class Moralis {
         fun getSigningData(): String {
             return "Authentication Interface"
         }
+
+        private fun isDotAuth(options: String): Boolean {
+            return when (options) {
+                "dot", "polkadot", "kusama" -> {
+                    true
+                }
+                else -> {
+                    false
+                }
+            }
+        }
+
+        private fun isElrondAuth(options: String): Boolean {
+            return when (options) {
+                "erd", "elrond" -> {
+                    true
+                }
+                else -> {
+                    false
+                }
+            }
+        }
     }
 
     interface MoralisCallback {
@@ -292,29 +257,13 @@ class Moralis {
         data class Error(val throwable: Throwable) : MoralisStatus()
     }
 
+    sealed class MoralisAuthentication {
+        object Ethereum : MoralisAuthentication()
+        object Polkadot : MoralisAuthentication()
+        object Elrond : MoralisAuthentication()
+    }
+
     enum class EthereumEvents {
         CONNECT, DISCONNECT, ACCOUNTS_CHANGED, CHAIN_CHANGED
-    }
-
-    fun isDotAuth(options: String): Boolean {
-        return when (options) {
-            "dot", "polkadot", "kusama" -> {
-                true
-            }
-            else -> {
-                false
-            }
-        }
-    }
-
-    fun isElrondAuth(options: String): Boolean {
-        return when (options) {
-            "erd", "elrond" -> {
-                true
-            }
-            else -> {
-                false
-            }
-        }
     }
 }

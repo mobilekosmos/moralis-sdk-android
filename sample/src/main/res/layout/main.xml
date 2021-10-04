@@ -38,14 +38,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="Sign up with wallet"
-        app:layout_constraintBottom_toTopOf="@+id/sign_in_button" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/sign_in_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Sign in with wallet"
         app:layout_constraintBottom_toTopOf="@+id/logout_button" />
 
     <com.google.android.material.button.MaterialButton

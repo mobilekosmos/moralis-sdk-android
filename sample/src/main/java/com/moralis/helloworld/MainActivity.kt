@@ -59,31 +59,6 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
                     ).show()
                 }
             }
-
-//            Toast.makeText( this@MainActivity, "Connecting to wallet, please wait...",
-//                Toast.LENGTH_SHORT
-//            ).show()
-
-        }
-
-        mMainBinding.signInButton.setOnClickListener {
-            Moralis.signIn(this) {
-                if (it != null) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "User logged in! Username: " + it.username,
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-                    Toast.makeText(this@MainActivity, "Error, user not logged in!", Toast.LENGTH_LONG)
-                        .show()
-                }
-            }
-            Toast.makeText(
-                this@MainActivity,
-                "Connecting to wallet, please wait...",
-                Toast.LENGTH_SHORT
-            ).show()
         }
 
         mMainBinding.logoutButton.setOnClickListener {
@@ -99,10 +74,10 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
             Moralis.MoralisStatus.Approved -> adaptUIAfterSessionApproved(accounts)
             Moralis.MoralisStatus.Closed -> adaptUIAfterSessionClosed()
             Moralis.MoralisStatus.Disconnected -> {
-                Log.e("+++", "Disconnected")
+                Log.e(TAG, "Disconnected")
             }
             is Moralis.MoralisStatus.Error -> {
-                Log.e("+++", "Error:" + status.throwable.localizedMessage)
+                Log.e(TAG, "Error:" + status.throwable.localizedMessage)
             }
         }
     }
@@ -113,7 +88,6 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
             mMainBinding.textView.text = "Connected: $accounts"
             mMainBinding.textView.visibility = View.VISIBLE
             mMainBinding.signUpButton.visibility = View.GONE
-            mMainBinding.signInButton.visibility = View.GONE
             mMainBinding.logoutButton.visibility = View.VISIBLE
 //            mMainBinding.screenMainTxButton.visibility = View.VISIBLE
         }
@@ -124,7 +98,6 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
         mUiScope.launch {
             mMainBinding.textView.visibility = View.GONE
             mMainBinding.signUpButton.visibility = View.VISIBLE
-            mMainBinding.signInButton.visibility = View.VISIBLE
             mMainBinding.logoutButton.visibility = View.GONE
 //            mMainBinding.screenMainTxButton.visibility = View.GONE
         }
