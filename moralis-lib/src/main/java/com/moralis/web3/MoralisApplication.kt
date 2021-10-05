@@ -62,7 +62,7 @@ open class MoralisApplication : Application() {
         lateinit var config: Session.FullyQualifiedConfig
         lateinit var session: Session
 
-        fun resetSession() {
+        fun resetSession(supportedWallets: Array<String>? = emptyArray(), chainId: Int? = 1) {
             nullOnThrow { session }?.clearCallbacks()
             val key = ByteArray(32).also { Random().nextBytes(it) }.toNoPrefixHexString()
             config = Session.FullyQualifiedConfig(UUID.randomUUID().toString(), "http://localhost:${BridgeServer.PORT}", key)
@@ -75,7 +75,7 @@ open class MoralisApplication : Application() {
                         url = appPackage,
                         name = appName,
                         description = appName,
-                        icons = listOf()
+                        icons = listOf(),
                     )
             )
             session.offer()

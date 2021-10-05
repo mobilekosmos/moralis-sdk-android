@@ -11,15 +11,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.moralis.helloworld.databinding.MainBinding
 import com.moralis.web3.MoralisApplication
+import com.moralis.web3.User
 
 /**
  * This is a more elaborated example with more UI elements.
  */
 class MainActivity : Activity(), Moralis.MoralisCallback {
 
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+
     private val mUiScope = CoroutineScope(Dispatchers.Main)
     private lateinit var mMainBinding: MainBinding
-    private val TAG = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,19 +50,9 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
             // TODO: think about best signingMessage. Get string from res.
             // Press sign to authenticate with your wallet.
             // Press the sign button to create a new account using the wallet as ID.
-            Moralis.authenticate(this, "Press 'Sign' to authenticate with your wallet.") {
-                if (it != null && it.isNew) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "User logged in! Username: " + it.username,
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "User not logged in! Maybe user already exists.",
-                        Toast.LENGTH_LONG
-                    ).show()
+            Moralis.authenticate(this, "Press") {
+                if (it != null) {
+                    adaptUIAfterSessionApproved(it)
                 }
             }
         }
@@ -86,8 +80,27 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
 
     private fun adaptUIAfterSessionApproved(accounts: List<String>?) {
         Log.d(TAG, "adaptUIAfterSessionApproved")
+        // ignore for now TODO
+        return
+//        mUiScope.launch {
+//            mMainBinding.textView.text = "Connected: $accounts"
+//            mMainBinding.textView.visibility = View.VISIBLE
+//            mMainBinding.signUpButton.visibility = View.GONE
+//            mMainBinding.logoutButton.visibility = View.VISIBLE
+////            mMainBinding.screenMainTxButton.visibility = View.VISIBLE
+//        }
+    }
+
+    private fun adaptUIAfterSessionApproved(user: User) {
+        Log.d(TAG, "adaptUIAfterSessionApproved")
         mUiScope.launch {
-            mMainBinding.textView.text = "Connected: $accounts"
+            if (user.isNew) {
+                Toast.makeText(this@MainActivity, "Welcome!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this@MainActivity, "Welcome back!", Toast.LENGTH_SHORT).show()
+            }
+            val ethAddress = user.get("ethAddress")
+            mMainBinding.textView.text = "Connected address: $ethAddress"
             mMainBinding.textView.visibility = View.VISIBLE
             mMainBinding.signUpButton.visibility = View.GONE
             mMainBinding.logoutButton.visibility = View.VISIBLE

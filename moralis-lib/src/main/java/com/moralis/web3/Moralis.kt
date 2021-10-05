@@ -44,12 +44,14 @@ open class Moralis {
             signingMessage: String?,
             authenticationType: MoralisAuthentication = MoralisAuthentication.Ethereum,
             supportedWallets: Array<String> = emptyArray(),
+            chainId: Int? = 1,
             moralisAuthCallback: (user: User?) -> Unit,
         ) {
+            // TODO: use chainId and supportedWallets
             when (authenticationType) {
                 MoralisAuthentication.Polkadot -> MoralisPolkadot.authenticate()
                 MoralisAuthentication.Elrond -> MoralisElrond.authenticate()
-                MoralisAuthentication.Ethereum -> authenticate(signingMessage, context, supportedWallets, moralisAuthCallback)
+                MoralisAuthentication.Ethereum -> authenticate(signingMessage, context, supportedWallets, chainId, moralisAuthCallback)
             }
         }
 
@@ -57,10 +59,11 @@ open class Moralis {
             signingMessage: String?,
             context: Context,
             supportedWallets: Array<String>,
+            chainId: Int?,
             moralisAuthCallback: (user: User?) -> Unit
         ) {
             // Starts a new connection to the bridge server and waits for a wallet to connect.
-            MoralisApplication.resetSession()
+            MoralisApplication.resetSession(supportedWallets, chainId)
 
             // If a custom signing message for the wallet signature prompt was not provided use
             // a default one.
@@ -151,10 +154,13 @@ open class Moralis {
             // We must explicitly specify the parameters names otherwise the compiler for some
             // reason doesn't respect the order of passed parameters and may link address with message
             // and message with address.
+            // TODO: for now we sent the address as message and the message as address,
+            // it's strange but sending the parameters in the "right way" doesn't work,
+            // neither with Metamask nor with TrustWallet.
             val signMessage = Session.MethodCall.PersonalSignMessage(
                 id = id,
-                address = ethAddress,
-                message = signingMessage
+                message =  ethAddress,
+                address = signingMessage
             )
             // TODO: maybe use Sign Typed Data v4 instead
             MoralisApplication.session.performMethodCall(signMessage) {
