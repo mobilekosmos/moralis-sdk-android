@@ -103,7 +103,10 @@ open class Moralis {
         }
 
         fun onDestroy() {
-            MoralisApplication.session.removeCallback(mCallback)
+            // If session is not initialized this method may be called anyways, so return.
+            val session = nullOnThrow { MoralisApplication.session } ?: return
+
+            session.removeCallback(mCallback)
         }
 
         /**
@@ -245,7 +248,9 @@ open class Moralis {
         }
 
         fun logOut() {
-            MoralisApplication.session.kill()
+            // Usually the user gets cached, this we could have a user logged-in and this method being
+            // called without session. We simply ignore the session and log out the user.
+            nullOnThrow { MoralisApplication.session }?.kill()
             User.logOut()
         }
 

@@ -44,6 +44,10 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
         super.onStart()
         Moralis.onStart(this)
 
+        User.getCurrentUser()?.let {
+            adaptUIAfterSessionApproved(it)
+        }
+
         //val button = findViewById<Button>(R.id.login_button)
         mMainBinding.signUpButton.setOnClickListener {
 
