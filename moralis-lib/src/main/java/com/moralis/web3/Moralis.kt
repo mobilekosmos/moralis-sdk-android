@@ -21,57 +21,73 @@ open class Moralis {
 
     companion object {
         private const val TAG = "Moralis"
+
         private lateinit var mCallback: Session.Callback
-        private val uiScope = CoroutineScope(Dispatchers.Main)
         private lateinit var mActivityCallback: MoralisCallback
+        private val uiScope = CoroutineScope(Dispatchers.Main)
         private var mTxRequest: Long? = null
 
         fun initialize(appId: String, serverURL: String, applicationContext: Context) {
             Parse.initialize(
                 Parse.Configuration.Builder(applicationContext)
-                    .applicationId("TlygdyM0oqw39Qej6J0lAOppcrNAe2sA1FfZijQQ") // if desired
-                    .server("https://zda0u2csr0us.grandmoralis.com:2053/server")
+                    .applicationId(appId)
+                    .server(serverURL)
                     .build()
             )
         }
 
         /**
-         * Signs in an existing user onto the Moralis Server.
+         * Signs in or up a user onto the Moralis Server.
          */
         fun authenticate(
             context: Context,
             signingMessage: String?,
             authenticationType: MoralisAuthentication = MoralisAuthentication.Ethereum,
+            supportedWallets: Array<String> = emptyArray(),
             moralisAuthCallback: (user: User?) -> Unit,
         ) {
+            when (authenticationType) {
+                MoralisAuthentication.Polkadot -> MoralisPolkadot.authenticate()
+                MoralisAuthentication.Elrond -> MoralisElrond.authenticate()
+                MoralisAuthentication.Ethereum -> authenticate(signingMessage, context, supportedWallets, moralisAuthCallback)
+            }
+        }
+
+        private fun authenticate(
+            signingMessage: String?,
+            context: Context,
+            supportedWallets: Array<String>,
+            moralisAuthCallback: (user: User?) -> Unit
+        ) {
+            // Starts a new connection to the bridge server and waits for a wallet to connect.
             MoralisApplication.resetSession()
 
-            when (authenticationType) {
-                // TODO
-                MoralisAuthentication.Polkadot -> return MoralisPolkadot.authenticate()
-                MoralisAuthentication.Elrond -> return MoralisElrond.authenticate()
-            }
-
+            // If a custom signing message for the wallet signature prompt was not provided use
+            // a default one.
             val data = signingMessage ?: getSigningData()
 
             mCallback = object : Session.Callback {
                 override fun onStatus(status: Session.Status) {
                     when (status) {
-                        Session.Status.Approved -> sessionApprovedSignUp(
+                        Session.Status.Approved -> handleSessionApproved(
                             moralisAuthCallback,
                             context,
                             data
                         )
-                        Session.Status.Closed -> sessionClosed()
+                        Session.Status.Closed -> {
+                            Log.e(TAG, "onStatus Session Closed")
+                            handleSessionClosed()
+                        }
                         Session.Status.Connected -> {
                             requestConnectionToWallet(context)
                         }
                         Session.Status.Disconnected -> {
-                            Log.e(TAG, "onStatus Disconnected")
-                            sessionClosed()
+                            Log.e(TAG, "onStatus Session Disconnected")
+                            handleSessionClosed()
                         }
                         is Session.Status.Error -> {
                             Log.e(TAG, "onStatus Error:" + status.throwable.localizedMessage)
+                            // TODO
                         }
                     }
                 }
@@ -87,13 +103,20 @@ open class Moralis {
             MoralisApplication.session.removeCallback(mCallback)
         }
 
+        /**
+         * Sends an intent to the OS with the intention of opening a wallet that can handle the
+         * authentication.
+         */
         private fun requestConnectionToWallet(context: Context) {
             val i = Intent(Intent.ACTION_VIEW)
             i.data = Uri.parse(MoralisApplication.config.toWCUri())
             context.startActivity(i)
         }
 
-        private fun sessionApprovedSignUp(
+        /**
+         * Starts the signing up process after a wallet approved a connection to it.
+         */
+        private fun handleSessionApproved(
             moralisAuthCallback: (result: User?) -> Unit,
             context: Context,
             signingMessage: String
@@ -104,10 +127,9 @@ open class Moralis {
             }
         }
 
-        private fun sessionClosed() {
+        private fun handleSessionClosed() {
             MoralisApplication.session.removeCallback(mCallback)
             uiScope.launch {
-                Log.d(TAG, "Disconnected")
                 mActivityCallback.onStatus(MoralisStatus.Closed, null)
             }
         }
@@ -126,14 +148,16 @@ open class Moralis {
             Log.d(TAG, "id: $id")
             Log.d(TAG, "signingMessage: $signingMessage")
 
+            // We must explicitly specify the parameters names otherwise the compiler for some
+            // reason doesn't respect the order of passed parameters and may link address with message
+            // and message with address.
+            val signMessage = Session.MethodCall.PersonalSignMessage(
+                id = id,
+                address = ethAddress,
+                message = signingMessage
+            )
             // TODO: maybe use Sign Typed Data v4 instead
-            MoralisApplication.session.performMethodCall(
-                Session.MethodCall.PersonalSignMessage(
-                    id,
-                    signingMessage,
-                    ethAddress
-                )
-            ) {
+            MoralisApplication.session.performMethodCall(signMessage) {
                 handleResponse(
                     it,
                     ethAddress,
@@ -221,28 +245,6 @@ open class Moralis {
 
         fun getSigningData(): String {
             return "Authentication Interface"
-        }
-
-        private fun isDotAuth(options: String): Boolean {
-            return when (options) {
-                "dot", "polkadot", "kusama" -> {
-                    true
-                }
-                else -> {
-                    false
-                }
-            }
-        }
-
-        private fun isElrondAuth(options: String): Boolean {
-            return when (options) {
-                "erd", "elrond" -> {
-                    true
-                }
-                else -> {
-                    false
-                }
-            }
         }
     }
 

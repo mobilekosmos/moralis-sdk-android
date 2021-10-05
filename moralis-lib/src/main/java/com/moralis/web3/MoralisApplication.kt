@@ -55,6 +55,10 @@ open class MoralisApplication : Application() {
         private lateinit var storage: WCSessionStore
         private lateinit var appName: String
         private lateinit var appPackage : String
+
+        // TODO For now walletConnect only supports URL, maybe in a future version we can pass here raw data.
+//        private lateinit var appIconURL : String
+
         lateinit var config: Session.FullyQualifiedConfig
         lateinit var session: Session
 
@@ -71,7 +75,7 @@ open class MoralisApplication : Application() {
                         url = appPackage,
                         name = appName,
                         description = appName,
-                        icons = listOf("https://www.google.com/favicon.ico")
+                        icons = listOf()
                     )
             )
             session.offer()

@@ -43,8 +43,10 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
         //val button = findViewById<Button>(R.id.login_button)
         mMainBinding.signUpButton.setOnClickListener {
 
-            // TODO: think about best signingMessage.
-            Moralis.authenticate(this, "Wallet Authentication Interface") {
+            // TODO: think about best signingMessage. Get string from res.
+            // Press sign to authenticate with your wallet.
+            // Press the sign button to create a new account using the wallet as ID.
+            Moralis.authenticate(this, "Press 'Sign' to authenticate with your wallet.") {
                 if (it != null && it.isNew) {
                     Toast.makeText(
                         this@MainActivity,
