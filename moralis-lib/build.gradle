@@ -33,7 +33,7 @@ android {
 
 ext {
     moralisVersion = "moralis-SNAPSHOT"
-    moralisWalletConnectVersion = "0.9.9.5"
+    moralisWalletConnectVersion = "0.9.9.6"
     //moralisVersion = "1"
     versions = [
             kotlin                    : "1.5.31",
@@ -50,7 +50,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     api "com.github.mobilekosmos.Parse-SDK-Android:parse:$moralisVersion"
-//    implementation "com.github.mobilekosmos.Parse-SDK-Android:bolts-tasks:$moralisVersion"
     api "com.github.mobilekosmos:kotlin-walletconnect-lib:$moralisWalletConnectVersion"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
 

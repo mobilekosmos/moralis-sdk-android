@@ -1,9 +1,9 @@
 package com.moralis.web3
 
 import android.app.Application
+import com.moralis.web3.walletconnect.server.BridgeServer
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.moralis.web3.walletconnect.server.BridgeServer
 import okhttp3.OkHttpClient
 import org.komputing.khex.extensions.toNoPrefixHexString
 import org.walletconnect.Session
@@ -66,6 +66,7 @@ open class MoralisApplication : Application() {
             nullOnThrow { session }?.clearCallbacks()
             val key = ByteArray(32).also { Random().nextBytes(it) }.toNoPrefixHexString()
             config = Session.FullyQualifiedConfig(UUID.randomUUID().toString(), "http://localhost:${BridgeServer.PORT}", key)
+            // The walletConnect app freezes/crashes if "icons" in passed PeerMeta is not filled, so pass at least an empty list.
             session = WCSession(
                     config,
                     MoshiPayloadAdapter(moshi),

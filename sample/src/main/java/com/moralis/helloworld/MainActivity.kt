@@ -5,13 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.moralis.helloworld.databinding.MainBinding
 import com.moralis.web3.Moralis
+import com.moralis.web3.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.moralis.helloworld.databinding.MainBinding
-import com.moralis.web3.MoralisApplication
-import com.moralis.web3.User
 
 /**
  * This is a more elaborated example with more UI elements.
@@ -54,7 +53,7 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
             // TODO: think about best signingMessage. Get string from res.
             // Press sign to authenticate with your wallet.
             // Press the sign button to create a new account using the wallet as ID.
-            Moralis.authenticate(this, "Press") {
+            Moralis.authenticate(this, "Press sign to authenticate with your wallet.") {
                 if (it != null) {
                     adaptUIAfterSessionApproved(it)
                 }
@@ -65,20 +64,6 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
             Moralis.logOut()
             adaptUIAfterSessionClosed()
             Toast.makeText(this@MainActivity, "Logged out", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    override fun onStatus(status: Moralis.MoralisStatus, accounts: List<String>?) {
-        Log.d(TAG, "onStatus ${status.toString()}")
-        when (status) {
-            Moralis.MoralisStatus.Approved -> adaptUIAfterSessionApproved(accounts)
-            Moralis.MoralisStatus.Closed -> adaptUIAfterSessionClosed()
-            Moralis.MoralisStatus.Disconnected -> {
-                Log.e(TAG, "Disconnected")
-            }
-            is Moralis.MoralisStatus.Error -> {
-                Log.e(TAG, "Error:" + status.throwable.localizedMessage)
-            }
         }
     }
 
@@ -104,7 +89,8 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
                 Toast.makeText(this@MainActivity, "Welcome back!", Toast.LENGTH_SHORT).show()
             }
             val ethAddress = user.get("ethAddress")
-            mMainBinding.textView.text = "Connected address: $ethAddress"
+            mMainBinding.textView.text =
+                "Connected address:\n $ethAddress \n\n Username:\n ${user.username}"
             mMainBinding.textView.visibility = View.VISIBLE
             mMainBinding.signUpButton.visibility = View.GONE
             mMainBinding.logoutButton.visibility = View.VISIBLE
@@ -127,4 +113,31 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
         Moralis.onDestroy()
         super.onDestroy()
     }
+
+    override fun onConnect(accounts: List<String>?) {
+        Log.d(TAG, "onConnect")
+        adaptUIAfterSessionApproved(accounts)
+    }
+
+    override fun onDisconnect() {
+        Log.d(TAG, "onDisconnect")
+        adaptUIAfterSessionClosed()
+    }
+
+    override fun onAccountsChanged(newAccountAddress: String) {
+        Log.d(TAG, "onAccountsChanged")
+        val linkNewAddress = false
+        // TODO: here you could ask the user if she wants to link the new address
+        // to the current account.
+        if (linkNewAddress) {
+            val signingMessage = "Press sign to authenticate with your wallet."
+            Moralis.link(newAccountAddress, signingMessage) {
+                Log.d(TAG, "New address linked to current user.")
+            }
+        }
+    }
+
+//    is Moralis.MoralisStatus.Error -> {
+//        Log.e(TAG, "Error:" + status.throwable.localizedMessage)
+//    }
 }

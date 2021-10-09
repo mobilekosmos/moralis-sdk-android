@@ -11,6 +11,10 @@ import com.moralis.web3.Moralis
  */
 class MainActivityBone : Activity(), Moralis.MoralisCallback {
 
+    companion object {
+        private const val TAG = "MainActivityBone"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.empty)
@@ -21,7 +25,7 @@ class MainActivityBone : Activity(), Moralis.MoralisCallback {
         )
 
         Moralis.authenticate(this, "Authentication") {
-            Log.d("Moralis", "User: " + it?.username)
+            Log.d(TAG, "User: " + it?.username)
         }
 
         Moralis.logOut()
@@ -37,14 +41,15 @@ class MainActivityBone : Activity(), Moralis.MoralisCallback {
         super.onDestroy()
     }
 
-    override fun onStatus(status: Moralis.MoralisStatus, accounts: List<String>?) {
-        when (status) {
-            Moralis.MoralisStatus.Approved -> { Log.d("Moralis", "onStatus Approved")}
-            Moralis.MoralisStatus.Closed -> { Log.d("Moralis", "onStatus Closed")}
-            Moralis.MoralisStatus.Disconnected -> { Log.e("Moralis", "onStatus Disconnected") }
-            is Moralis.MoralisStatus.Error -> {
-                Log.e("Moralis", "onStatus Error:" + status.throwable.localizedMessage)
-            }
-        }
+    // TODO Log.e("Moralis", "onStatus Error:" + status.throwable.localizedMessage)
+
+    override fun onConnect(accounts: List<String>?) {
+        Log.d(TAG, "onConnect")
+        TODO("Not yet implemented")
+    }
+
+    override fun onDisconnect() {
+        Log.d(TAG, "onDisconnect")
+        TODO("Not yet implemented")
     }
 }
