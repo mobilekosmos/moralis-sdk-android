@@ -26,7 +26,11 @@ open class Moralis {
         private val uiScope = CoroutineScope(Dispatchers.Main)
         private var mTxRequest: Long? = null
 
-        fun initialize(appId: String, serverURL: String, applicationContext: Context) {
+        fun start(appId: String, serverURL: String, applicationContext: Context) {
+            initializeParse(appId, serverURL, applicationContext)
+        }
+
+        private fun initializeParse(appId: String, serverURL: String, applicationContext: Context) {
             Parse.initialize(
                 Parse.Configuration.Builder(applicationContext)
                     .applicationId(appId)
@@ -216,9 +220,9 @@ open class Moralis {
             moralisAuthCallback: (user: User?) -> Unit
         ) {
             // TODO: handle exceptions
-            user?.addAllUnique("accounts", mutableListOf(ethAddress))
-            user?.put("ethAddress", ethAddress);
-            user?.saveInBackground {
+            user.addAllUnique("accounts", mutableListOf(ethAddress))
+            user.put("ethAddress", ethAddress);
+            user.saveInBackground {
                 // TODO: handle exceptions
                 Log.d(TAG, "user logged in.")
                 moralisAuthCallback.invoke(user)

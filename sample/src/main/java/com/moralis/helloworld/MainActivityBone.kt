@@ -19,7 +19,7 @@ class MainActivityBone : Activity(), Moralis.MoralisCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.empty)
 
-        Moralis.initialize(
+        Moralis.start(
             "TlygdyM0oqw39Qej6J0lAOppcrNAe2sA1FfZijQQ",
             "https://zda0u2csr0us.grandmoralis.com:2053/server", applicationContext
         )
