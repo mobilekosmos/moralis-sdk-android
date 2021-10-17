@@ -31,7 +31,7 @@ android {
 
 ext {
 //    moralisVersion = "moralis-SNAPSHOT"
-    moralisVersion = "update-code-SNAPSHOT"
+    moralisVersion = "master-SNAPSHOT"
     moralisWalletConnectVersion = "0.9.9.6"
     //moralisVersion = "1"
     versions = [
@@ -70,4 +70,6 @@ dependencies {
     // We need to specify this extra because the kotlin plugin adds an older version leading
     // to a warning about using different kotlin versions.
 //    implementation "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
+
+    implementation ('org.web3j:core:4.8.7')
 }

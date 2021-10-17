@@ -7,10 +7,13 @@ import android.view.View
 import android.widget.Toast
 import com.moralis.helloworld.databinding.MainBinding
 import com.moralis.web3.Moralis
+import com.moralis.web3.MoralisApplication
+import com.moralis.web3.MoralisWeb3Transaction
 import com.moralis.web3.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.walletconnect.nullOnThrow
 
 /**
  * This is a more elaborated example with more UI elements.
@@ -53,7 +56,10 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
             // TODO: think about best signingMessage. Get string from res.
             // Press sign to authenticate with your wallet.
             // Press the sign button to create a new account using the wallet as ID.
-            Moralis.authenticate(this, "Press sign to authenticate with your wallet.") {
+            Moralis.authenticate(
+                this@MainActivity,
+                "Press sign to authenticate with your wallet."
+            ) {
                 if (it != null) {
                     adaptUIAfterSessionApproved(it)
                 }
@@ -64,6 +70,29 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
             Moralis.logOut()
             adaptUIAfterSessionClosed()
             Toast.makeText(this@MainActivity, "Logged out", Toast.LENGTH_SHORT).show()
+        }
+
+        mMainBinding.transferButton.setOnClickListener {
+            val transferObj = MoralisWeb3Transaction.TransferObject.TransferObjectNATIVE(
+                amountToTransfer = "5.5",
+                receiver = "0x24EdA4f7d0c466cc60302b9b5e9275544E5ba552"
+            )
+            val session = nullOnThrow { MoralisApplication.session }
+            if (session == null) {
+                Log.d(TAG, "Session expired!")
+                Toast.makeText(this@MainActivity, "Session expired!", Toast.LENGTH_LONG).show()
+                Moralis.authenticate(
+                    this@MainActivity,
+                    "Press sign to authenticate with your wallet."
+                ) {
+                    if (it != null) {
+                        adaptUIAfterSessionApproved(it)
+                        MoralisWeb3Transaction.transfer(transferObj, this@MainActivity)
+                    }
+                }
+            } else {
+                MoralisWeb3Transaction.transfer(transferObj, this@MainActivity)
+            }
         }
     }
 
@@ -94,7 +123,7 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
             mMainBinding.textView.visibility = View.VISIBLE
             mMainBinding.signUpButton.visibility = View.GONE
             mMainBinding.logoutButton.visibility = View.VISIBLE
-//            mMainBinding.screenMainTxButton.visibility = View.VISIBLE
+            mMainBinding.transferButton.visibility = View.VISIBLE
         }
     }
 
@@ -104,7 +133,7 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
             mMainBinding.textView.visibility = View.GONE
             mMainBinding.signUpButton.visibility = View.VISIBLE
             mMainBinding.logoutButton.visibility = View.GONE
-//            mMainBinding.screenMainTxButton.visibility = View.GONE
+            mMainBinding.transferButton.visibility = View.GONE
         }
     }
 

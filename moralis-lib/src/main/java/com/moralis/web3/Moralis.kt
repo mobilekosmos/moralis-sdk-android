@@ -362,12 +362,6 @@ open class Moralis {
             }
         }
 
-        private fun navigateToWallet(context: Context) {
-            val i = Intent(Intent.ACTION_VIEW)
-            i.data = Uri.parse("wc:")
-            context.startActivity(i)
-        }
-
         fun onStart(callback: MoralisCallback) {
             mActivityCallback = callback
             initialSetup()
