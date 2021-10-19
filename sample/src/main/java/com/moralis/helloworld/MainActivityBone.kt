@@ -9,7 +9,7 @@ import com.moralis.web3.Moralis
  * This is a simple sample without UI interaction.
  * For a more elaborated sample with UI check MainActivity.
  */
-class MainActivityBone : Activity(), Moralis.MoralisCallback {
+class MainActivityBone : Activity(), Moralis.MoralisAuthenticationCallback {
 
     companion object {
         private const val TAG = "MainActivityBone"

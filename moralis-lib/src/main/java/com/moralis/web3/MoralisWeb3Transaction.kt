@@ -11,7 +11,11 @@ class MoralisWeb3Transaction {
         private const val TAG = "Transaction"
         private var mTxRequest: Long? = null
 
-        fun transfer(transferObject: TransferObject, context: Context) {
+        fun transfer(
+            transferObject: TransferObject,
+            context: Context,
+            moralisAuthCallback: MoralisTransferCallback
+        ) {
 
             val user = User.getCurrentUser()
             val accounts = (user.get("accounts") as ArrayList<*>)
@@ -41,9 +45,10 @@ class MoralisWeb3Transaction {
                     )
                     // TODO: maybe use Sign Typed Data v4 instead?
                     MoralisApplication.session.performMethodCall(
-                        transaction,
-                        ::handleTransferResponse
-                    )
+                        transaction
+                    ) {
+                        handleTransferResponse(it, moralisAuthCallback)
+                    }
                     mTxRequest = id
                     navigateToWallet(context)
                 }
@@ -81,12 +86,19 @@ class MoralisWeb3Transaction {
 
         private fun handleTransferResponse(
             response: Session.MethodCall.Response,
+            moralisAuthCallback: MoralisTransferCallback,
         ) {
             if (response.id == mTxRequest) {
                 mTxRequest = null
-                Log.d(TAG, "TRANSFER done")
+                Log.d(TAG, "Transfer done")
                 if (response.error != null) {
                     Log.d(TAG, "Transaction error: ${response.error}")
+                    moralisAuthCallback.onError()
+                } else {
+                    moralisAuthCallback.onResponse(response.result)
+//                    moralisAuthCallback.onConfirmation()
+//                    moralisAuthCallback.onReceipt()
+//                    moralisAuthCallback.onTransactionHash(null)
                 }
             }
         }
@@ -114,7 +126,7 @@ class MoralisWeb3Transaction {
             amountToTransfer: String,
             receiver: String
         ) : TransferObject(TransferType.NATIVE, system, awaitReceipt, receiver) {
-            val mAmount: String = UnitConverter.convertETHToGwei(amountToTransfer)
+            val mAmount: String = MoralisUnitConverter.convertETHToWei(amountToTransfer)
         }
 
         class TransferObjectERC20(
@@ -140,5 +152,12 @@ class MoralisWeb3Transaction {
         ) : TransferObject(TransferType.ERC1155, system, awaitReceipt, receiver)
     }
 
+    interface MoralisTransferCallback {
+        //        fun onTransactionHash(accounts: List<String>?)
+//        fun onReceipt()
+//        fun onConfirmation()
+        fun onError()
+        fun onResponse(result: Any?)
+    }
 
 }

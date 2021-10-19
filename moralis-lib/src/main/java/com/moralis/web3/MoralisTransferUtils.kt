@@ -1,6 +1,6 @@
 package com.moralis.web3
 
-class TransferUtils {
+class MoralisTransferUtils {
 
     companion object {
         // TODO: "cons" only on primitive types allowd

@@ -22,7 +22,7 @@ open class Moralis {
         private const val TAG = "Moralis"
 
         private lateinit var mCallback: Session.Callback
-        private lateinit var mActivityCallback: MoralisCallback
+        private lateinit var mActivityAuthenticationCallback: MoralisAuthenticationCallback
         private val uiScope = CoroutineScope(Dispatchers.Main)
         private var mTxRequest: Long? = null
 
@@ -263,7 +263,7 @@ open class Moralis {
         private fun handleSessionClosed() {
             MoralisApplication.session.removeCallback(mCallback)
             uiScope.launch {
-                mActivityCallback.onDisconnect()
+                mActivityAuthenticationCallback.onDisconnect()
             }
         }
 
@@ -362,8 +362,8 @@ open class Moralis {
             }
         }
 
-        fun onStart(callback: MoralisCallback) {
-            mActivityCallback = callback
+        fun onStart(authenticationCallback: MoralisAuthenticationCallback) {
+            mActivityAuthenticationCallback = authenticationCallback
             initialSetup()
         }
 
@@ -372,7 +372,7 @@ open class Moralis {
             val session = nullOnThrow { MoralisApplication.session } ?: return
             session.addCallback(mCallback)
             if (session.approvedAccounts() != null) {
-                mActivityCallback.onConnect(session.approvedAccounts())
+                mActivityAuthenticationCallback.onConnect(session.approvedAccounts())
             }
         }
 
@@ -397,16 +397,16 @@ open class Moralis {
         }
     }
 
-    interface MoralisCallback {
+    interface MoralisAuthenticationCallback {
         fun onConnect(accounts: List<String>?)
         fun onDisconnect()
-
-        fun onAccountsChanged(newAccountAddress: String) { /* Default implementation. */
+        fun onAccountsChanged(newAccountAddress: String) {
+            /* Default implementation. */
         }
 
-        fun onChainIdChanged(newChainId: Long) { /* Default implementation. */
+        fun onChainIdChanged(newChainId: Long) {
+            /* Default implementation. */
         }
-
     }
 
     sealed class MoralisStatus {

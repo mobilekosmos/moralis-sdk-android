@@ -18,7 +18,7 @@ import org.walletconnect.nullOnThrow
 /**
  * This is a more elaborated example with more UI elements.
  */
-class MainActivity : Activity(), Moralis.MoralisCallback {
+class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
 
     companion object {
         private const val TAG = "MainActivity"
@@ -87,13 +87,31 @@ class MainActivity : Activity(), Moralis.MoralisCallback {
                 ) {
                     if (it != null) {
                         adaptUIAfterSessionApproved(it)
-                        MoralisWeb3Transaction.transfer(transferObj, this@MainActivity)
+                        startTransfer(transferObj)
                     }
                 }
             } else {
-                MoralisWeb3Transaction.transfer(transferObj, this@MainActivity)
+                startTransfer(transferObj)
             }
         }
+    }
+
+    private fun startTransfer(transferObj: MoralisWeb3Transaction.TransferObject.TransferObjectNATIVE) {
+        MoralisWeb3Transaction.transfer(
+            transferObj,
+            this@MainActivity,
+            object : MoralisWeb3Transaction.MoralisTransferCallback {
+                override fun onError() {
+                    Log.d(TAG, "onError")
+                    //TODO("Not yet implemented")
+                }
+
+                override fun onResponse(result: Any?) {
+                    Log.d(TAG, "onResponse")
+                    //TODO("Not yet implemented")
+                }
+
+            })
     }
 
     private fun adaptUIAfterSessionApproved(accounts: List<String>?) {
