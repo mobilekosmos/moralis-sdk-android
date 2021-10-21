@@ -15,4 +15,9 @@ For more information on Moralis and its features, see [the website](https://mora
 
 ## Getting Started
 
-The easiest way to integrate the Moralis SDK into your Android project is through the... TODO
+The easiest way to integrate the Moralis SDK into your Android project is through adding the dependency to your buid.gradle file:
+
+    implementation 'com.github.mobilekosmos:moralis-sdk-android:<Tag>'
+
+where <Tag> is the latest released version on Github, please check.
+You can also use "master-SNAPSHOT" but this is not recommended, as the master is not approved for production.
