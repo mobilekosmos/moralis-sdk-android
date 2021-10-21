@@ -194,12 +194,26 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
         user.email = "username@moralismagician.com"
         user.signUpInBackground { e ->
             if (e == null) {
-                Log.d(TAG, "authenticateToMoralis() ALL OK")
+                Log.d(TAG, "signUp() ALL OK")
                 // Hooray! Let them use the app now.
             } else {
                 Log.e(TAG, "failed to login: " + e.message)
-                // Sign up didn't succeed. Look at the ParseException
-                // to figure out what went wrong
+                // Sign-Up failed. Look at the ParseException to figure out what went wrong.
+            }
+        }
+    }
+
+    /**
+     * SignIn example.
+     */
+    fun signIn() {
+        MoralisUser.logInInBackground("username", "pass") { user, e ->
+            if (user != null) {
+                Log.d(TAG, "signIn() ALL OK")
+                // Hooray! The user is logged in.
+            } else {
+                Log.e(TAG, "failed to login: " + e.message)
+                // SignIn failed. Look at the ParseException to see what happened.
             }
         }
     }
