@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 import org.walletconnect.Session
 import org.walletconnect.nullOnThrow
 
-typealias User = ParseUser
-typealias Query = ParseQuery<*>
+typealias MoralisUser = ParseUser
+typealias MoralisQuery = ParseQuery<*>
 
 open class Moralis {
 
@@ -48,7 +48,7 @@ open class Moralis {
             authenticationType: MoralisAuthentication = MoralisAuthentication.Ethereum,
             supportedWallets: Array<String> = emptyArray(),
             chainId: Int? = 1,
-            moralisAuthCallback: (user: User?) -> Unit,
+            moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit,
         ) {
             // TODO: use chainId and supportedWallets
             when (authenticationType) {
@@ -69,7 +69,7 @@ open class Moralis {
             context: Context,
             supportedWallets: Array<String>,
             chainId: Int?,
-            moralisAuthCallback: (user: User?) -> Unit
+            moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit
         ) {
             // Starts a new connection to the bridge server and waits for a wallet to connect.
             MoralisApplication.resetSession(supportedWallets, chainId)
@@ -124,7 +124,7 @@ open class Moralis {
         fun link(
             account: String,
             signingMessage: String,
-            moralisAuthCallback: (user: User?) -> Unit
+            moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit
         ) {
 
             val ethAddress = account.lowercase()
@@ -133,7 +133,7 @@ open class Moralis {
             val query = ParseQuery(EthAddress.javaClass)
             val ethAddressRecord = query.get(ethAddress)
             // get current user
-            val user = User.getCurrentUser()
+            val user = MoralisUser.getCurrentUser()
             if (ethAddressRecord != null) {
 
                 val id = System.currentTimeMillis()
@@ -167,14 +167,14 @@ open class Moralis {
         // TODO: test and search for alternative background calls for cleaner code.
         fun unlink(
             account: String,
-            moralisAuthCallback: (user: User?) -> Unit
+            moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit
         ) {
             val accountsLower = account.lowercase();
             val EthAddress = ParseObject.create("_EthAddress")
             val query = ParseQuery(EthAddress.javaClass)
             val ethAddressRecord = query.get(accountsLower)
             ethAddressRecord.deleteInBackground() {
-                val user = User.getCurrentUser()
+                val user = MoralisUser.getCurrentUser()
                 val accounts = (user.get("accounts") as Array<*>)
                 val nextAccounts = accounts.filter { it != accountsLower }
                 user?.put("accounts", nextAccounts)
@@ -195,7 +195,7 @@ open class Moralis {
             ethAddress: String,
             signingMessage: String,
             user: ParseUser,
-            moralisAuthCallback: (user: User?) -> Unit
+            moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit
         ) {
             uiScope.launch {
                 val signature = ((response.result as? String) ?: "Unknown response")
@@ -217,7 +217,7 @@ open class Moralis {
         private fun saveUser(
             user: ParseUser,
             ethAddress: String,
-            moralisAuthCallback: (user: User?) -> Unit
+            moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit
         ) {
             // TODO: handle exceptions
             user.addAllUnique("accounts", mutableListOf(ethAddress))
@@ -250,7 +250,7 @@ open class Moralis {
          * Starts the signing up process after a wallet approved a connection to it.
          */
         private fun handleSessionApproved(
-            moralisAuthCallback: (result: User?) -> Unit,
+            moralisAuthCallback: (result: MoralisUser?) -> Unit,
             context: Context,
             signingMessage: String
         ) {
@@ -268,7 +268,7 @@ open class Moralis {
         }
 
         private fun signUpToMoralis(
-            moralisAuthCallback: (result: User?) -> Unit,
+            moralisAuthCallback: (result: MoralisUser?) -> Unit,
             context: Context,
             signingMessage: String
         ) {
@@ -313,7 +313,7 @@ open class Moralis {
             ethAddress: String,
             signingMessage: String,
             accountsLowercase: List<String>,
-            moralisAuthCallback: (result: User?) -> Unit
+            moralisAuthCallback: (result: MoralisUser?) -> Unit
         ) {
             Log.d(TAG, "handleResponse, response: ${response.id} mTxRequest=$mTxRequest")
             if (response.id == mTxRequest) {
@@ -328,9 +328,9 @@ open class Moralis {
                         "data" to signingMessage
                     )
 
-                    val parseUserTask = User.logInWithInBackground("moralisEth", authData)
-                    parseUserTask.continueWith(object : Continuation<User?, Void?> {
-                        override fun then(task: Task<User?>): Void? {
+                    val parseUserTask = MoralisUser.logInWithInBackground("moralisEth", authData)
+                    parseUserTask.continueWith(object : Continuation<MoralisUser?, Void?> {
+                        override fun then(task: Task<MoralisUser?>): Void? {
                             if (task.isCancelled()) {
                                 Log.d(TAG, "then: task.isCancelled()")
 //                                // TODO showError()
@@ -341,19 +341,19 @@ open class Moralis {
 //                                // TODO showError()
                                 return null
                             }
-                            val user: User? = task.result
-                            user?.acl = ParseACL(user);
+                            val moralisUser: MoralisUser? = task.result
+                            moralisUser?.acl = ParseACL(moralisUser);
                             // TODO: if (!user) throw new Error('Could not get user');
-                            user?.addAllUnique("accounts", accountsLowercase)
-                            user?.put("ethAddress", ethAddress);
+                            moralisUser?.addAllUnique("accounts", accountsLowercase)
+                            moralisUser?.put("ethAddress", ethAddress);
                             // For new users, the username will be a randomly generated alphanumeric string and the email
                             // property will not exist. This can be set or changed by the app.
 
                             Log.d(TAG, "call saveInBackground")
-                            user?.saveInBackground {
+                            moralisUser?.saveInBackground {
                                 // TODO: handle exceptions
                                 Log.d(TAG, "user logged in.")
-                                moralisAuthCallback.invoke(user)
+                                moralisAuthCallback.invoke(moralisUser)
                             }
                             return null
                         }
@@ -380,7 +380,7 @@ open class Moralis {
             // Usually the user gets cached, this we could have a user logged-in and this method being
             // called without session. We simply ignore the session and log out the user.
             nullOnThrow { MoralisApplication.session }?.kill()
-            User.logOut()
+            MoralisUser.logOut()
         }
 
         fun getSigningData(): String {

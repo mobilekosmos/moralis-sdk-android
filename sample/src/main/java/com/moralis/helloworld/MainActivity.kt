@@ -8,8 +8,8 @@ import android.widget.Toast
 import com.moralis.helloworld.databinding.MainBinding
 import com.moralis.web3.Moralis
 import com.moralis.web3.MoralisApplication
+import com.moralis.web3.MoralisUser
 import com.moralis.web3.MoralisWeb3Transaction
-import com.moralis.web3.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,7 +46,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
         super.onStart()
         Moralis.onStart(this)
 
-        User.getCurrentUser()?.let {
+        MoralisUser.getCurrentUser()?.let {
             adaptUIAfterSessionApproved(it)
         }
 
@@ -127,17 +127,17 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
 //        }
     }
 
-    private fun adaptUIAfterSessionApproved(user: User) {
+    private fun adaptUIAfterSessionApproved(moralisUser: MoralisUser) {
         Log.d(TAG, "adaptUIAfterSessionApproved")
         mUiScope.launch {
-            if (user.isNew) {
+            if (moralisUser.isNew) {
                 Toast.makeText(this@MainActivity, "Welcome!", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this@MainActivity, "Welcome back!", Toast.LENGTH_SHORT).show()
             }
-            val ethAddress = user.get("ethAddress")
+            val ethAddress = moralisUser.get("ethAddress")
             mMainBinding.textView.text =
-                "Connected address:\n $ethAddress \n\n Username:\n ${user.username}"
+                "Connected address:\n $ethAddress \n\n Username:\n ${moralisUser.username}"
             mMainBinding.textView.visibility = View.VISIBLE
             mMainBinding.signUpButton.visibility = View.GONE
             mMainBinding.logoutButton.visibility = View.VISIBLE
@@ -180,6 +180,26 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             val signingMessage = "Press sign to authenticate with your wallet."
             Moralis.link(newAccountAddress, signingMessage) {
                 Log.d(TAG, "New address linked to current user.")
+            }
+        }
+    }
+
+    /**
+     * Sign-Up example.
+     */
+    fun signUp() {
+        val user = MoralisUser()
+        user.username = "username"
+        user.setPassword("password")
+        user.email = "username@moralismagician.com"
+        user.signUpInBackground { e ->
+            if (e == null) {
+                Log.d(TAG, "authenticateToMoralis() ALL OK")
+                // Hooray! Let them use the app now.
+            } else {
+                Log.e(TAG, "failed to login: " + e.message)
+                // Sign up didn't succeed. Look at the ParseException
+                // to figure out what went wrong
             }
         }
     }

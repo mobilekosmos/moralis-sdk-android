@@ -17,7 +17,7 @@ class MoralisWeb3Transaction {
             moralisAuthCallback: MoralisTransferCallback
         ) {
 
-            val user = User.getCurrentUser()
+            val user = MoralisUser.getCurrentUser()
             val accounts = (user.get("accounts") as ArrayList<*>)
             val sender = accounts[0]?.toString() ?: return
 
