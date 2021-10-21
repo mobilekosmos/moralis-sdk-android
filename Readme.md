@@ -19,5 +19,5 @@ The easiest way to integrate the Moralis SDK into your Android project is throug
 
     implementation 'com.github.mobilekosmos:moralis-sdk-android:<Tag>'
 
-where "<Tag>" is the latest released version on Github, please check.
+where '< Tag >' is the latest released version on Github, please check.
 You can also use "master-SNAPSHOT" but this is not recommended, as the master is not approved for production.
