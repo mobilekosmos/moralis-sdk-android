@@ -54,17 +54,23 @@ class LoginActivity : AppCompatActivity() {
         mLoginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
 
-            hideProgress(loading)
             if (loginResult.error != null) {
                 showLoginFailed(loginResult.error)
             }
             if (loginResult.success != null) {
                 updateUiWithUser(loginResult.success)
+                setResult(Activity.RESULT_OK)
+                // Complete and destroy login activity once successful.
+                finish()
             }
-            setResult(Activity.RESULT_OK)
+        })
 
-            //Complete and destroy login activity once successful
-//            finish()
+        mLoginViewModel.dataLoading.observe(this@LoginActivity, Observer {
+            if (it) {
+                showProgress(loading)
+            } else {
+                hideProgress(loading)
+            }
         })
 
         username.afterTextChanged {
@@ -94,12 +100,10 @@ class LoginActivity : AppCompatActivity() {
             }
 
             login.setOnClickListener {
-                showProgress(loading)
                 mLoginViewModel.login(username.text.toString(), password.text.toString())
             }
 
             signUp?.setOnClickListener {
-                showProgress(loading)
                 val user = MoralisUser().apply {
                     this.username = username.text.toString()
                     this.setPassword(password.text.toString())

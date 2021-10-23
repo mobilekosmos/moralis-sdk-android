@@ -142,9 +142,12 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             } else {
                 Toast.makeText(this@MainActivity, "Welcome back!", Toast.LENGTH_SHORT).show()
             }
-            val ethAddress = moralisUser.get("ethAddress")
+            var ethAddress = moralisUser.get("ethAddress")
+            if (ethAddress == null) {
+                ethAddress = "No wallet linked yet"
+            }
             mMainBinding.textView.text =
-                "Connected address:\n $ethAddress \n\n Username:\n ${moralisUser.username}"
+                "Connected wallet:\n $ethAddress \n\n Username:\n ${moralisUser.username}"
             mMainBinding.textView.visibility = View.VISIBLE
             mMainBinding.signUpButton.visibility = View.GONE
             mMainBinding.logoutButton.visibility = View.VISIBLE

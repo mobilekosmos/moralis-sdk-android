@@ -6,6 +6,5 @@ package com.moralis.helloworld.login.ui
 data class LoginFormState(
     val usernameError: Int? = null,
     val passwordError: Int? = null,
-//    val running: Boolean = false,
     val isDataValid: Boolean = false
 )

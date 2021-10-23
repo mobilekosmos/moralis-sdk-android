@@ -19,7 +19,14 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
 
+    private val _dataLoading = MutableLiveData<Boolean>()
+    val dataLoading: LiveData<Boolean> = _dataLoading
+
     fun login(username: String, password: String) {
+        if (_dataLoading.value == true) {
+            return
+        }
+        _dataLoading.value = true
         // Create a new coroutine on the UI thread.
         viewModelScope.launch {
             val result = loginRepository.login(username, password)
@@ -30,10 +37,15 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
             } else {
                 _loginResult.value = LoginResult(error = result.toString())
             }
+            _dataLoading.value = false
         }
     }
 
     fun signUp(user: MoralisUser) {
+        if (_dataLoading.value == true) {
+            return
+        }
+        _dataLoading.value = true
         // Create a new coroutine on the UI thread.
         viewModelScope.launch {
             val result = loginRepository.signUp(user)
@@ -44,6 +56,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
             } else {
                 _loginResult.value = LoginResult(error = result.toString())
             }
+            _dataLoading.value = false
         }
     }
 
