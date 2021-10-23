@@ -8,6 +8,7 @@
     android:layout_marginHorizontal="16dp"
     android:layout_marginTop="16dp"
     android:layout_marginBottom="64dp"
+    tools:context=".MainActivity"
     android:orientation="vertical">
 
     <ImageView
@@ -37,7 +38,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Sign up with wallet"
+        android:text="Continue with wallet"
+        app:layout_constraintBottom_toTopOf="@+id/sign_up_email_button" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/sign_up_email_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Continue with email"
         app:layout_constraintBottom_toTopOf="@+id/logout_button" />
 
     <com.google.android.material.button.MaterialButton

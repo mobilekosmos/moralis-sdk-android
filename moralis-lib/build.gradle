@@ -3,6 +3,8 @@ plugins {
     id 'kotlin-android'
 }
 
+apply plugin: "maven-publish"
+
 android {
     compileSdk 31
 
@@ -72,4 +74,14 @@ dependencies {
 //    implementation "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
 
     implementation ('org.web3j:core:4.8.7')
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+            }
+        }
+    }
 }

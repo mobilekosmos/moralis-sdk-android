@@ -1,11 +1,13 @@
 package com.moralis.helloworld
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import com.moralis.helloworld.databinding.MainBinding
+import com.moralis.helloworld.databinding.ActivityMainBinding
+import com.moralis.helloworld.login.ui.LoginActivity
 import com.moralis.web3.Moralis
 import com.moralis.web3.MoralisApplication
 import com.moralis.web3.MoralisUser
@@ -25,7 +27,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
     }
 
     private val mUiScope = CoroutineScope(Dispatchers.Main)
-    private lateinit var mMainBinding: MainBinding
+    private lateinit var mMainBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +39,8 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
 //        mMainBinding = MainBinding.inflate(layoutInflater)
 //        setContentView(mMainBinding.root)
 
-        setContentView(R.layout.main)
-        mMainBinding = MainBinding.bind(findViewById(R.id.main_container))
+        setContentView(R.layout.activity_main)
+        mMainBinding = ActivityMainBinding.bind(findViewById(R.id.main_container))
     }
 
     override fun onStart() {
@@ -64,6 +66,11 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
                     adaptUIAfterSessionApproved(it)
                 }
             }
+        }
+
+        mMainBinding.signUpEmailButton.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
         }
 
         mMainBinding.logoutButton.setOnClickListener {
@@ -142,6 +149,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             mMainBinding.signUpButton.visibility = View.GONE
             mMainBinding.logoutButton.visibility = View.VISIBLE
             mMainBinding.transferButton.visibility = View.VISIBLE
+            mMainBinding.signUpEmailButton.visibility = View.GONE
         }
     }
 
@@ -152,6 +160,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             mMainBinding.signUpButton.visibility = View.VISIBLE
             mMainBinding.logoutButton.visibility = View.GONE
             mMainBinding.transferButton.visibility = View.GONE
+            mMainBinding.signUpEmailButton.visibility = View.VISIBLE
         }
     }
 
@@ -185,36 +194,16 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
     }
 
     /**
-     * Sign-Up example.
+     * Reset password example.
      */
-    fun signUp() {
-        val user = MoralisUser()
-        user.username = "username"
-        user.setPassword("password")
-        user.email = "username@moralismagician.com"
-        user.signUpInBackground { e ->
-            if (e == null) {
-                Log.d(TAG, "signUp() ALL OK")
-                // Hooray! Let them use the app now.
-            } else {
-                Log.e(TAG, "failed to login: " + e.message)
-                // Sign-Up failed. Look at the ParseException to figure out what went wrong.
+    fun resetPassword() {
+        MoralisUser.requestPasswordResetInBackground("email@example.com") {
+            if (it == null) {
+                Log.d(TAG, "resetPassword: no account associated with email.")
+                // no account associated with email.
+                return@requestPasswordResetInBackground
             }
-        }
-    }
-
-    /**
-     * SignIn example.
-     */
-    fun signIn() {
-        MoralisUser.logInInBackground("username", "pass") { user, e ->
-            if (user != null) {
-                Log.d(TAG, "signIn() ALL OK")
-                // Hooray! The user is logged in.
-            } else {
-                Log.e(TAG, "failed to login: " + e.message)
-                // SignIn failed. Look at the ParseException to see what happened.
-            }
+            Log.d(TAG, "resetPassword error: ${it.message}")
         }
     }
 
