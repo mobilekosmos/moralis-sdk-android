@@ -187,7 +187,11 @@ open class Moralis {
                     val accounts: ArrayList<String> = user.get("accounts") as ArrayList<String>
                     val nextAccounts = accounts.filter { it != ethAddress }
                     user?.put("accounts", nextAccounts)
-                    user?.put("ethAddress", nextAccounts.first().toString())
+                    if (nextAccounts.isEmpty()) {
+                        user?.remove("ethAddress")
+                    } else {
+                        user?.put("ethAddress", nextAccounts.first().toString())
+                    }
                     val parseUserTask = user.unlinkFromInBackground("moralisEth")
                     parseUserTask.continueWith {
                         user.saveInBackground {

@@ -126,7 +126,13 @@ class MoralisWeb3Transaction {
             amountToTransfer: String,
             receiver: String
         ) : TransferObject(TransferType.NATIVE, system, awaitReceipt, receiver) {
+            // does not work on TrustWallet if not converting to BigInteger.
             val mAmount: String = MoralisUnitConverter.convertETHToWei(amountToTransfer)
+
+//            val mAmount : String = MoralisUnitConverter.convertETHToWeiHex(amountToTransfer) // works on TrustWallet
+//            val mAmount : String = "0x5AF3107A4000" // works on TrustWallet
+            //                        val mAmount = "5500000000000000000" // works on TrustWallet
+//            val mAmount = "0x4C53ECDC18A60000" // works but freezes in metamask, works on TrustWallet
         }
 
         class TransferObjectERC20(
