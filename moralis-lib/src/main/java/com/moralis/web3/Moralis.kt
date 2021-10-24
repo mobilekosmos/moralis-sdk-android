@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import com.parse.*
+import com.parse.ParseQuery
 import com.parse.boltsinternal.Continuation
 import com.parse.boltsinternal.Task
 import kotlinx.coroutines.CoroutineScope
@@ -13,8 +14,10 @@ import kotlinx.coroutines.launch
 import org.walletconnect.Session
 import org.walletconnect.nullOnThrow
 
+
 typealias MoralisUser = ParseUser
 typealias MoralisQuery = ParseQuery<*>
+typealias MoralisObject = ParseObject
 
 open class Moralis {
 
@@ -122,46 +125,50 @@ open class Moralis {
 
         // TODO: test and search for alternative background calls for cleaner code.
         fun link(
-            account: String,
+            accountToLink: String,
             signingMessage: String,
             moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit
         ) {
 
-            val ethAddress = account.lowercase()
+            val ethAddress = accountToLink.lowercase()
             // Search if the address already exists on the server.
-            val EthAddress = ParseObject.create("_EthAddress")
-            val query = ParseQuery(EthAddress.javaClass)
-            val ethAddressRecord = query.get(ethAddress)
+            val builder = ParseQuery.State.Builder<MoralisObject>("_EthAddress")
+            val query = MoralisQuery(builder)
             // get current user
             val user = MoralisUser.getCurrentUser()
-            if (ethAddressRecord != null) {
-
-                val id = System.currentTimeMillis()
-                // We must explicitly specify the parameters names otherwise the compiler for some
-                // reason doesn't respect the order of passed parameters and may link address with message
-                // and message with address.
-                // TODO: for now we sent the address as message and the message as address,
-                // it's strange but sending the parameters in the "right way" doesn't work,
-                // neither with Metamask nor with TrustWallet.
-                val signMessage = Session.MethodCall.PersonalSignMessage(
-                    id = id,
-                    message = ethAddress,
-                    address = signingMessage
-                )
-                // TODO: maybe use Sign Typed Data v4 instead?
-                MoralisApplication.session.performMethodCall(signMessage) {
-                    handleSignLinkResponse(
-                        it,
-                        ethAddress,
-                        signingMessage,
-                        user,
-                        moralisAuthCallback
+            var ethAddressRecord: ParseObject?
+            try {
+                ethAddressRecord = query.get(ethAddress)
+            } catch (e: ParseException) {
+                if (e.code == ParseException.OBJECT_NOT_FOUND) {
+                    val id = System.currentTimeMillis()
+                    // We must explicitly specify the parameters names otherwise the compiler for some
+                    // reason doesn't respect the order of passed parameters and may link address with message
+                    // and message with address.
+                    // TODO: for now we sent the address as message and the message as address,
+                    // it's strange but sending the parameters in the "right way" doesn't work,
+                    // neither with Metamask nor with TrustWallet.
+                    val signMessage = Session.MethodCall.PersonalSignMessage(
+                        id = id,
+                        message = ethAddress,
+                        address = signingMessage
                     )
+                    // TODO: maybe use Sign Typed Data v4 instead?
+                    MoralisApplication.session.performMethodCall(signMessage) {
+                        handleSignLinkResponse(
+                            it,
+                            ethAddress,
+                            signingMessage,
+                            user,
+                            moralisAuthCallback
+                        )
+                    }
+                    this.mTxRequest = id
                 }
-                this.mTxRequest = id
-            } else {
-                saveUser(user, ethAddress, moralisAuthCallback)
+                return
             }
+
+            saveUser(user, ethAddress, moralisAuthCallback)
         }
 
         // TODO: test and search for alternative background calls for cleaner code.
@@ -224,7 +231,7 @@ open class Moralis {
             user.put("ethAddress", ethAddress);
             user.saveInBackground {
                 // TODO: handle exceptions
-                Log.d(TAG, "user logged in.")
+                Log.d(TAG, "user saved.")
                 moralisAuthCallback.invoke(user)
             }
         }
@@ -275,6 +282,14 @@ open class Moralis {
             val accounts = MoralisApplication.session.approvedAccounts() ?: return
             val accountsLowercase = accounts.map { it.lowercase() }
             val ethAddress = accountsLowercase.first()
+
+            // If there is already a moralis user present like in the case of "SignUp with Email"
+            // we link the wallet to the current user instead of signing up a new user.
+            MoralisUser.getCurrentUser()?.let {
+                link(ethAddress, signingMessage, moralisAuthCallback)
+                return
+            }
+
             val id = System.currentTimeMillis()
             Log.d(TAG, "accountsLowercase: $accountsLowercase")
             Log.d(TAG, "ethAddress: $ethAddress")

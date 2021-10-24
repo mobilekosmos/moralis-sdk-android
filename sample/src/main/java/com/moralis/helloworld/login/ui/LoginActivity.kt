@@ -25,7 +25,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_login)
-        mBinding = ActivityLoginBinding.bind(findViewById(R.id.container))
+        mBinding = ActivityLoginBinding.bind(findViewById(R.id.login_container))
 
         val username = mBinding.username
         val password = mBinding.password

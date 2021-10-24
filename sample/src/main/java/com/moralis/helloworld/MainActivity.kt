@@ -49,11 +49,11 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
         Moralis.onStart(this)
 
         MoralisUser.getCurrentUser()?.let {
-            adaptUIAfterSessionApproved(it)
+            setLoggedInUI(it)
         }
 
         //val button = findViewById<Button>(R.id.login_button)
-        mMainBinding.signUpButton.setOnClickListener {
+        mMainBinding.connectWithWalletButton.setOnClickListener {
 
             // TODO: think about best signingMessage. Get string from res.
             // Press sign to authenticate with your wallet.
@@ -71,6 +71,17 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
         mMainBinding.signUpEmailButton.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
+        }
+
+        mMainBinding.linkWalletButton.setOnClickListener {
+            Moralis.authenticate(
+                this@MainActivity,
+                "Press sign to authenticate with your wallet."
+            ) {
+                if (it != null) {
+                    adaptUIAfterSessionApproved(it)
+                }
+            }
         }
 
         mMainBinding.logoutButton.setOnClickListener {
@@ -134,6 +145,23 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
 //        }
     }
 
+    private fun setLoggedInUI(moralisUser: MoralisUser) {
+        var ethAddress = moralisUser.get("ethAddress")
+        if (ethAddress == null) {
+            ethAddress = "No wallet linked yet"
+            mMainBinding.linkWalletButton.visibility = View.VISIBLE
+        } else {
+            mMainBinding.linkWalletButton.visibility = View.GONE
+        }
+        mMainBinding.textView.text =
+            "Connected wallet:\n $ethAddress \n\n Username:\n ${moralisUser.username}"
+        mMainBinding.textView.visibility = View.VISIBLE
+        mMainBinding.connectWithWalletButton.visibility = View.GONE
+        mMainBinding.logoutButton.visibility = View.VISIBLE
+        mMainBinding.transferButton.visibility = View.VISIBLE
+        mMainBinding.signUpEmailButton.visibility = View.GONE
+    }
+
     private fun adaptUIAfterSessionApproved(moralisUser: MoralisUser) {
         Log.d(TAG, "adaptUIAfterSessionApproved")
         mUiScope.launch {
@@ -142,17 +170,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             } else {
                 Toast.makeText(this@MainActivity, "Welcome back!", Toast.LENGTH_SHORT).show()
             }
-            var ethAddress = moralisUser.get("ethAddress")
-            if (ethAddress == null) {
-                ethAddress = "No wallet linked yet"
-            }
-            mMainBinding.textView.text =
-                "Connected wallet:\n $ethAddress \n\n Username:\n ${moralisUser.username}"
-            mMainBinding.textView.visibility = View.VISIBLE
-            mMainBinding.signUpButton.visibility = View.GONE
-            mMainBinding.logoutButton.visibility = View.VISIBLE
-            mMainBinding.transferButton.visibility = View.VISIBLE
-            mMainBinding.signUpEmailButton.visibility = View.GONE
+            setLoggedInUI(moralisUser)
         }
     }
 
@@ -160,7 +178,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
         Log.d(TAG, "adaptUIAfterSessionClosed")
         mUiScope.launch {
             mMainBinding.textView.visibility = View.GONE
-            mMainBinding.signUpButton.visibility = View.VISIBLE
+            mMainBinding.connectWithWalletButton.visibility = View.VISIBLE
             mMainBinding.logoutButton.visibility = View.GONE
             mMainBinding.transferButton.visibility = View.GONE
             mMainBinding.signUpEmailButton.visibility = View.VISIBLE
