@@ -79,9 +79,21 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
                 "Press sign to authenticate with your wallet."
             ) {
                 if (it != null) {
-                    adaptUIAfterSessionApproved(it)
+                    adaptUIAfterWalletLinked(it)
                 }
             }
+        }
+
+        mMainBinding.unlinkWalletButton.setOnClickListener {
+            MoralisUser.getCurrentUser()?.let { currentUser ->
+                val ethAddress = currentUser.get("ethAddress")?.toString() ?: return@let
+                Moralis.unlinkWallet(ethAddress) { newMoralisUser ->
+                    if (newMoralisUser != null) {
+                        adaptUIAfterWalletUnlinked(newMoralisUser)
+                    }
+                }
+            }
+
         }
 
         mMainBinding.logoutButton.setOnClickListener {
@@ -150,8 +162,10 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
         if (ethAddress == null) {
             ethAddress = "No wallet linked yet"
             mMainBinding.linkWalletButton.visibility = View.VISIBLE
+            mMainBinding.unlinkWalletButton.visibility = View.GONE
         } else {
             mMainBinding.linkWalletButton.visibility = View.GONE
+            mMainBinding.unlinkWalletButton.visibility = View.VISIBLE
         }
         mMainBinding.textView.text =
             "Connected wallet:\n $ethAddress \n\n Username:\n ${moralisUser.username}"
@@ -174,6 +188,22 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
         }
     }
 
+    private fun adaptUIAfterWalletLinked(moralisUser: MoralisUser) {
+        Log.d(TAG, "adaptUIAfterSessionApproved")
+        mUiScope.launch {
+            Toast.makeText(this@MainActivity, "Wallet linked", Toast.LENGTH_SHORT).show()
+            setLoggedInUI(moralisUser)
+        }
+    }
+
+    private fun adaptUIAfterWalletUnlinked(moralisUser: MoralisUser) {
+        Log.d(TAG, "adaptUIAfterSessionApproved")
+        mUiScope.launch {
+            Toast.makeText(this@MainActivity, "Wallet unlinked", Toast.LENGTH_SHORT).show()
+            setLoggedInUI(moralisUser)
+        }
+    }
+
     private fun adaptUIAfterSessionClosed() {
         Log.d(TAG, "adaptUIAfterSessionClosed")
         mUiScope.launch {
@@ -181,6 +211,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             mMainBinding.connectWithWalletButton.visibility = View.VISIBLE
             mMainBinding.logoutButton.visibility = View.GONE
             mMainBinding.transferButton.visibility = View.GONE
+            mMainBinding.unlinkWalletButton.visibility = View.GONE
             mMainBinding.signUpEmailButton.visibility = View.VISIBLE
         }
     }
@@ -208,7 +239,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
         // to the current account.
         if (linkNewAddress) {
             val signingMessage = "Press sign to authenticate with your wallet."
-            Moralis.link(newAccountAddress, signingMessage) {
+            Moralis.linkWallet(newAccountAddress, signingMessage) {
                 Log.d(TAG, "New address linked to current user.")
             }
         }

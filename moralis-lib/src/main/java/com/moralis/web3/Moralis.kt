@@ -124,10 +124,10 @@ open class Moralis {
         }
 
         // TODO: test and search for alternative background calls for cleaner code.
-        fun link(
+        fun linkWallet(
             accountToLink: String,
             signingMessage: String,
-            moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit
+            moralisCallback: (moralisUser: MoralisUser?) -> Unit
         ) {
 
             val ethAddress = accountToLink.lowercase()
@@ -160,7 +160,7 @@ open class Moralis {
                             ethAddress,
                             signingMessage,
                             user,
-                            moralisAuthCallback
+                            moralisCallback
                         )
                     }
                     this.mTxRequest = id
@@ -168,33 +168,56 @@ open class Moralis {
                 return
             }
 
-            saveUser(user, ethAddress, moralisAuthCallback)
+            saveUser(user, ethAddress, moralisCallback)
         }
 
         // TODO: test and search for alternative background calls for cleaner code.
-        fun unlink(
+        fun unlinkWallet(
             account: String,
-            moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit
+            moralisCallback: (moralisUser: MoralisUser?) -> Unit
         ) {
-            val accountsLower = account.lowercase();
-            val EthAddress = ParseObject.create("_EthAddress")
-            val query = ParseQuery(EthAddress.javaClass)
-            val ethAddressRecord = query.get(accountsLower)
-            ethAddressRecord.deleteInBackground() {
-                val user = MoralisUser.getCurrentUser()
-                val accounts = (user.get("accounts") as Array<*>)
-                val nextAccounts = accounts.filter { it != accountsLower }
-                user?.put("accounts", nextAccounts)
-                user?.put("ethAddress", nextAccounts.first().toString())
-                val parseUserTask = user.unlinkFromInBackground("moralisEth")
-                parseUserTask.continueWith {
+            val ethAddress = account.lowercase();
+            val builder = ParseQuery.State.Builder<MoralisObject>("_EthAddress")
+            val query = MoralisQuery(builder)
+            var ethAddressRecord: ParseObject? = null
+            try {
+                ethAddressRecord = query.get(ethAddress)
+                ethAddressRecord.deleteInBackground() {
+                    val user = MoralisUser.getCurrentUser()
+                    val accounts: ArrayList<String> = user.get("accounts") as ArrayList<String>
+                    val nextAccounts = accounts.filter { it != ethAddress }
+                    user?.put("accounts", nextAccounts)
+                    user?.put("ethAddress", nextAccounts.first().toString())
+                    val parseUserTask = user.unlinkFromInBackground("moralisEth")
+                    parseUserTask.continueWith {
+                        user.saveInBackground {
+                            // TODO: handle exceptions
+                            Log.d(TAG, "Wallet unlinked.")
+                            moralisCallback.invoke(user)
+                        }
+                    }
+                }
+            } catch (e: ParseException) {
+                // If the address was not found on the server then the address is only saved locally
+                // and we must update the user object.
+                if (e.code == ParseException.OBJECT_NOT_FOUND) {
+                    val user = MoralisUser.getCurrentUser()
+                    val accounts: ArrayList<String> = user.get("accounts") as ArrayList<String>
+                    val nextAccounts = accounts.filter { it != ethAddress }
+                    user?.put("accounts", nextAccounts)
+                    if (nextAccounts.isEmpty()) {
+                        user?.remove("ethAddress")
+                    } else {
+                        user?.put("ethAddress", nextAccounts.first().toString())
+                    }
                     user.saveInBackground {
                         // TODO: handle exceptions
-                        Log.d(TAG, "User unlinked.")
-                        moralisAuthCallback.invoke(user)
+                        Log.d(TAG, "Wallet unlinked.")
+                        moralisCallback.invoke(user)
                     }
                 }
             }
+
         }
 
         private fun handleSignLinkResponse(
@@ -286,7 +309,7 @@ open class Moralis {
             // If there is already a moralis user present like in the case of "SignUp with Email"
             // we link the wallet to the current user instead of signing up a new user.
             MoralisUser.getCurrentUser()?.let {
-                link(ethAddress, signingMessage, moralisAuthCallback)
+                linkWallet(ethAddress, signingMessage, moralisAuthCallback)
                 return
             }
 

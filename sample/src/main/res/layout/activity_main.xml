@@ -78,9 +78,19 @@
             android:layout_marginBottom="8dp"
             android:text="Transfer"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/logout_button"
+            app:layout_constraintBottom_toTopOf="@+id/unlink_wallet_button"
             app:layout_constraintVertical_bias="1.0"
             tools:visibility="visible" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/unlink_wallet_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="8dp"
+            android:text="Unlink wallet"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/logout_button" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/logout_button"
