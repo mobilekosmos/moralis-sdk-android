@@ -104,7 +104,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
 
         mMainBinding.transferButton.setOnClickListener {
             val transferObj = MoralisWeb3Transaction.TransferObject.TransferObjectNATIVE(
-                amountToTransfer = "5.5",
+                amountToTransfer = "0.1",
                 receiver = "0x24EdA4f7d0c466cc60302b9b5e9275544E5ba552"
             )
             val session = nullOnThrow { MoralisApplication.session }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import com.parse.*
+import com.parse.ParseException.INVALID_SESSION_TOKEN
 import com.parse.ParseQuery
 import com.parse.boltsinternal.Continuation
 import com.parse.boltsinternal.Task
@@ -164,11 +165,17 @@ open class Moralis {
                         )
                     }
                     this.mTxRequest = id
+                } else if (e.code == INVALID_SESSION_TOKEN) {
+                    handleInvalidSession()
                 }
                 return
             }
 
             saveUser(user, ethAddress, moralisCallback)
+        }
+
+        private fun handleInvalidSession() {
+            logOut()
         }
 
         // TODO: test and search for alternative background calls for cleaner code.
@@ -219,9 +226,10 @@ open class Moralis {
                         Log.d(TAG, "Wallet unlinked.")
                         moralisCallback.invoke(user)
                     }
+                } else if (e.code == INVALID_SESSION_TOKEN) {
+                    handleInvalidSession()
                 }
             }
-
         }
 
         private fun handleSignLinkResponse(
@@ -243,6 +251,12 @@ open class Moralis {
 
                 val parseUserTask = user.linkWithInBackground("moralisEth", authData)
                 parseUserTask.continueWith {
+                    if (it.error != null && it.error is ParseException) {
+                        if ((it.error as ParseException).code == INVALID_SESSION_TOKEN) {
+                            handleInvalidSession()
+                            return@continueWith
+                        }
+                    }
                     saveUser(user, ethAddress, moralisAuthCallback)
                 }
             }
@@ -257,7 +271,11 @@ open class Moralis {
             user.addAllUnique("accounts", mutableListOf(ethAddress))
             user.put("ethAddress", ethAddress);
             user.saveInBackground {
-                // TODO: handle exceptions
+                if (it.code == INVALID_SESSION_TOKEN) {
+                    handleInvalidSession()
+                    return@saveInBackground
+                }
+                // TODO: handle other exceptions
                 Log.d(TAG, "user saved.")
                 moralisAuthCallback.invoke(user)
             }
@@ -383,6 +401,12 @@ open class Moralis {
 //                                // TODO showError()
                                 return null
                             }
+                            if (task.error != null && task.error is ParseException) {
+                                if ((task.error as ParseException).code == INVALID_SESSION_TOKEN) {
+                                    handleInvalidSession()
+                                    return null
+                                }
+                            }
                             val moralisUser: MoralisUser? = task.result
                             moralisUser?.acl = ParseACL(moralisUser);
                             // TODO: if (!user) throw new Error('Could not get user');
@@ -394,6 +418,10 @@ open class Moralis {
                             Log.d(TAG, "call saveInBackground")
                             moralisUser?.saveInBackground {
                                 // TODO: handle exceptions
+                                if (it.code == INVALID_SESSION_TOKEN) {
+                                    handleInvalidSession()
+                                    return@saveInBackground
+                                }
                                 Log.d(TAG, "user logged in.")
                                 moralisAuthCallback.invoke(moralisUser)
                             }
