@@ -73,7 +73,10 @@ dependencies {
     // to a warning about using different kotlin versions.
 //    implementation "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
 
+    // Needed for the toWei() function
     implementation ('org.web3j:core:4.8.7')
+
+    implementation files('libs/kotlin-client-1.0.0.jar')
 }
 
 afterEvaluate {
