@@ -239,7 +239,7 @@ open class Moralis {
             response: Session.MethodCall.Response,
             ethAddress: String,
             signingMessage: String,
-            user: ParseUser,
+            user: MoralisUser,
             moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit
         ) {
             uiScope.launch {
@@ -266,7 +266,7 @@ open class Moralis {
         }
 
         private fun saveUser(
-            user: ParseUser,
+            user: MoralisUser,
             ethAddress: String,
             moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit
         ) {
@@ -274,7 +274,7 @@ open class Moralis {
             user.addAllUnique("accounts", mutableListOf(ethAddress))
             user.put("ethAddress", ethAddress);
             user.saveInBackground {
-                if (it.code == INVALID_SESSION_TOKEN) {
+                if (it?.code == INVALID_SESSION_TOKEN) {
                     handleInvalidSession()
                     return@saveInBackground
                 }
@@ -421,7 +421,7 @@ open class Moralis {
                             Log.d(TAG, "call saveInBackground")
                             moralisUser?.saveInBackground {
                                 // TODO: handle exceptions
-                                if (it.code == INVALID_SESSION_TOKEN) {
+                                if (it?.code == INVALID_SESSION_TOKEN) {
                                     handleInvalidSession()
                                     return@saveInBackground
                                 }
