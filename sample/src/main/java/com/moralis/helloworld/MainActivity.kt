@@ -12,9 +12,12 @@ import com.moralis.web3.Moralis
 import com.moralis.web3.MoralisApplication
 import com.moralis.web3.MoralisUser
 import com.moralis.web3.MoralisWeb3Transaction
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.moralis.web3.api.MoralisWeb3ApiAccount
+import com.moralis.web3.api.data.MoralisWeb3APIResult
+import com.moralis.web3.restapisdk.api.AccountApi
+import com.moralis.web3.restapisdk.auth.ApiKeyAuth
+import com.moralis.web3.restapisdk.infrastructure.ApiClient
+import kotlinx.coroutines.*
 import org.walletconnect.nullOnThrow
 
 /**
@@ -124,6 +127,14 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
                 startTransfer(transferObj)
             }
         }
+
+        mMainBinding.getBalanceButton.setOnClickListener {
+            MoralisUser.getCurrentUser()?.let {
+//                getNativeBalance(it.get("ethAddress").toString())
+                getTransactions(it.get("ethAddress").toString())
+            }
+
+        }
     }
 
     private fun startTransfer(transferObj: MoralisWeb3Transaction.TransferObject.TransferObjectNATIVE) {
@@ -131,7 +142,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             transferObj,
             this@MainActivity,
             object : MoralisWeb3Transaction.MoralisTransferCallback {
-                override fun onError() {
+                override fun onError(message: String) {
                     Log.d(TAG, "onError")
                     //TODO("Not yet implemented")
                 }
@@ -158,14 +169,18 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
     }
 
     private fun setLoggedInUI(moralisUser: MoralisUser) {
+        // TODO: create an API for getting the address without requiring parameter.
         var ethAddress = moralisUser.get("ethAddress")
+
         if (ethAddress == null) {
             ethAddress = "No wallet linked yet"
             mMainBinding.linkWalletButton.visibility = View.VISIBLE
             mMainBinding.unlinkWalletButton.visibility = View.GONE
+            mMainBinding.getBalanceButton.visibility = View.GONE
         } else {
             mMainBinding.linkWalletButton.visibility = View.GONE
             mMainBinding.unlinkWalletButton.visibility = View.VISIBLE
+            mMainBinding.getBalanceButton.visibility = View.VISIBLE
         }
         mMainBinding.textView.text =
             "Connected wallet:\n $ethAddress \n\n Username:\n ${moralisUser.username}"
@@ -185,6 +200,50 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
                 Toast.makeText(this@MainActivity, "Welcome back!", Toast.LENGTH_SHORT).show()
             }
             setLoggedInUI(moralisUser)
+        }
+    }
+
+    private fun getTransactions(address: String) {
+        mUiScope.launch {
+            when (val result = MoralisWeb3ApiAccount.getTransactions(address)) {
+                is MoralisWeb3APIResult.Success -> {
+                    Log.d(TAG, "getTransactions: Success")
+                    // TODO: implement
+                }
+                is MoralisWeb3APIResult.Error -> {
+                    Log.d(TAG, "getTransactions error code: $result.errorCode")
+                }
+            }
+        }
+    }
+
+    // Example how to fetch the Moralis REST API directly.
+    // Dependent on moralis-web3api-client-kotlin-1.0.0.jar, moshi, okhttp and retrofit libs.
+    // Never store your API_KEY on a client or/and unsecured.
+    // You can get your API_KEY on the Moralis Admin console (https://admin.moralis.io/servers).
+    private fun getNativeBalance(address: String) {
+        val client = ApiClient()
+        val apiKey = "TODO"
+        val authorization = ApiKeyAuth("header", "X-API-Key", apiKey)
+        client.addAuthorization("ApiKeyAuth", authorization)
+        val service = client.createService(AccountApi::class.java)
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = service.getNativeBalance(address)
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Balance: ${response.body()?.balance}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Error getting balance: ${response.code()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 
@@ -211,6 +270,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             mMainBinding.connectWithWalletButton.visibility = View.VISIBLE
             mMainBinding.logoutButton.visibility = View.GONE
             mMainBinding.transferButton.visibility = View.GONE
+            mMainBinding.getBalanceButton.visibility = View.GONE
             mMainBinding.unlinkWalletButton.visibility = View.GONE
             mMainBinding.signUpEmailButton.visibility = View.VISIBLE
         }

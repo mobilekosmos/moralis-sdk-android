@@ -1,0 +1,4 @@
+curl -X 'GET' \
+  'https://deep-index.moralis.io/api/v2/0x24EdA4f7d0c466cc60302b9b5e9275544E5ba552/nft?chain=eth&format=decimal' \
+  -H 'accept: application/json' \
+  -H 'X-API-Key: sRvRSfBB6e6IFFiWhrQWyCJbUxZGCgyWk3RybJWXmP8lV0KzkFvDrRmVmHwmcQ7Y'

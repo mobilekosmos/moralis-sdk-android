@@ -1,0 +1,4 @@
+curl -X 'POST' 'https://zda0u2csr0us.grandmoralis.com:2053/server/functions/getNativeBalance' \
+  -d '{"address":"0x24EdA4f7d0c466cc60302b9b5e9275544E5ba552"}'
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json'

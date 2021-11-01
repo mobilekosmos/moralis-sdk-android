@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import com.moralis.web3.restapisdk.api.AccountApi
+import com.moralis.web3.restapisdk.infrastructure.ApiClient
 import com.parse.*
 import com.parse.ParseException.INVALID_SESSION_TOKEN
 import com.parse.ParseQuery
@@ -32,6 +34,7 @@ open class Moralis {
 
         fun start(appId: String, serverURL: String, applicationContext: Context) {
             initializeParse(appId, serverURL, applicationContext)
+            val service = ApiClient().createService(AccountApi::class.java)
         }
 
         private fun initializeParse(appId: String, serverURL: String, applicationContext: Context) {

@@ -86,16 +86,17 @@ class MoralisWeb3Transaction {
 
         private fun handleTransferResponse(
             response: Session.MethodCall.Response,
-            moralisAuthCallback: MoralisTransferCallback,
+            moralisTransferCallback: MoralisTransferCallback,
         ) {
             if (response.id == mTxRequest) {
                 mTxRequest = null
                 Log.d(TAG, "Transfer done")
                 if (response.error != null) {
                     Log.d(TAG, "Transaction error: ${response.error}")
-                    moralisAuthCallback.onError()
+                    // TODO: .error!! right?
+                    moralisTransferCallback.onError(response.error!!.message)
                 } else {
-                    moralisAuthCallback.onResponse(response.result)
+                    moralisTransferCallback.onResponse(response.result)
 //                    moralisAuthCallback.onConfirmation()
 //                    moralisAuthCallback.onReceipt()
 //                    moralisAuthCallback.onTransactionHash(null)
@@ -162,7 +163,7 @@ class MoralisWeb3Transaction {
         //        fun onTransactionHash(accounts: List<String>?)
 //        fun onReceipt()
 //        fun onConfirmation()
-        fun onError()
+        fun onError(message: String)
         fun onResponse(result: Any?)
     }
 
