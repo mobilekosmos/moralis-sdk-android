@@ -130,8 +130,8 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
 
         mMainBinding.getBalanceButton.setOnClickListener {
             MoralisUser.getCurrentUser()?.let {
-//                getNativeBalance(it.get("ethAddress").toString())
-                getTransactions(it.get("ethAddress").toString())
+                getNativeBalance(it.get("ethAddress").toString())
+//                getTransactions(it.get("ethAddress").toString())
             }
 
         }

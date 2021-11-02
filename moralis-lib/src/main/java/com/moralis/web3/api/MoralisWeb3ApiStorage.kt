@@ -8,31 +8,29 @@ import com.moralis.web3.restapisdk.model.IpfsFileRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-open class MoralisWeb3ApiStorage {
+object MoralisWeb3ApiStorage {
 
-    companion object {
-        private fun getRetrofitService(): StorageApi {
-            val apiClient = ApiClient()
-            return apiClient.createService(StorageApi::class.java)
-        }
+    private fun getRetrofitService(): StorageApi {
+        val apiClient = ApiClient()
+        return apiClient.createService(StorageApi::class.java)
+    }
 
-        suspend fun uploadFolder(ipfsFileRequest: List<IpfsFileRequest>? = null): MoralisWeb3APIResult<List<IpfsFile>> {
-            return withContext(Dispatchers.IO) {
-                val service = getRetrofitService()
-                val response = service.uploadFolder(
-                    ipfsFileRequest
-                )
-                // TODO: simplify
-                if (response.isSuccessful) {
-                    val body = response.body()
-                    if (body != null) {
-                        MoralisWeb3APIResult.Success(body)
-                    } else {
-                        MoralisWeb3APIResult.Error(response.code())
-                    }
+    suspend fun uploadFolder(ipfsFileRequest: List<IpfsFileRequest>? = null): MoralisWeb3APIResult<List<IpfsFile>> {
+        return withContext(Dispatchers.IO) {
+            val service = getRetrofitService()
+            val response = service.uploadFolder(
+                ipfsFileRequest
+            )
+            // TODO: simplify
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    MoralisWeb3APIResult.Success(body)
                 } else {
                     MoralisWeb3APIResult.Error(response.code())
                 }
+            } else {
+                MoralisWeb3APIResult.Error(response.code())
             }
         }
     }
