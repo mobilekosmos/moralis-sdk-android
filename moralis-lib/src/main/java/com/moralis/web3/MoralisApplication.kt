@@ -18,7 +18,7 @@ open class MoralisApplication : Application() {
         init()
     }
 
-    fun init() {
+    private fun init() {
         initMoshi()
         initClient()
         initBridge()

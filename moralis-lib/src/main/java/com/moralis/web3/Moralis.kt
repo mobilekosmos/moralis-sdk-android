@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import com.moralis.web3.restapisdk.api.AccountApi
-import com.moralis.web3.restapisdk.infrastructure.ApiClient
 import com.parse.*
 import com.parse.ParseException.INVALID_SESSION_TOKEN
 import com.parse.ParseQuery
@@ -29,12 +27,11 @@ open class Moralis {
 
         private lateinit var mCallback: Session.Callback
         private lateinit var mActivityAuthenticationCallback: MoralisAuthenticationCallback
-        private val uiScope = CoroutineScope(Dispatchers.Main)
+        private val mUiScope = CoroutineScope(Dispatchers.Main)
         private var mTxRequest: Long? = null
 
         fun start(appId: String, serverURL: String, applicationContext: Context) {
             initializeParse(appId, serverURL, applicationContext)
-            val service = ApiClient().createService(AccountApi::class.java)
         }
 
         private fun initializeParse(appId: String, serverURL: String, applicationContext: Context) {
@@ -242,7 +239,7 @@ open class Moralis {
             user: MoralisUser,
             moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit
         ) {
-            uiScope.launch {
+            mUiScope.launch {
                 val signature = ((response.result as? String) ?: "Unknown response")
 
                 val authData = mapOf(
@@ -309,7 +306,7 @@ open class Moralis {
             context: Context,
             signingMessage: String
         ) {
-            uiScope.launch {
+            mUiScope.launch {
                 signUpToMoralis(moralisAuthCallback, context, signingMessage)
                 Log.d(TAG, "Connected:  ${MoralisApplication.session.approvedAccounts()}")
             }
@@ -317,7 +314,7 @@ open class Moralis {
 
         private fun handleSessionClosed() {
             MoralisApplication.session.removeCallback(mCallback)
-            uiScope.launch {
+            mUiScope.launch {
                 mActivityAuthenticationCallback.onDisconnect()
             }
         }
@@ -382,7 +379,7 @@ open class Moralis {
             if (response.id == mTxRequest) {
                 Log.d(TAG, "response.id == mTxRequest")
                 mTxRequest = null
-                uiScope.launch {
+                mUiScope.launch {
                     val signature = ((response.result as? String) ?: "Unknown response")
 
                     val authData = mapOf(
