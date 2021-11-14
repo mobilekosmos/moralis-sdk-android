@@ -37,11 +37,11 @@ class MoralisWeb3Transaction {
                         id = id,
                         from = sender,
                         to = obj.mTransactionReceiver,
-                        nonce = null,
-                        gasPrice = null,
-                        gasLimit = null,
+                        nonce = null, // Optional
+                        gasPrice = null, // Optional
+                        gasLimit = null, // Optional
                         value = obj.mAmount,
-                        data = ""
+                        data = "" // Required
                     )
                     // TODO: maybe use Sign Typed Data v4 instead?
                     MoralisApplication.session.performMethodCall(
@@ -54,7 +54,28 @@ class MoralisWeb3Transaction {
                 }
 
                 TransferType.ERC20 -> {
-                    // TODO: wait for walletconnect 2.0
+                    val obj = transferObject as TransferObject.TransferObjectERC20
+                    val transaction = Session.MethodCall.SendTransaction(
+                        id = id,
+                        from = sender,
+                        to = obj.mTransactionReceiver,
+                        nonce = null, // Optional
+                        gasPrice = null, // Optional
+                        gasLimit = null, // Optional
+                        value = obj.mAmount,
+                        data = Web3TransactionUtils.encodeTransferData(
+                            obj.mTransactionReceiver,
+                            obj.mAmount.toBigInteger()
+                        )
+                    )
+                    // TODO: maybe use Sign Typed Data v4 instead?
+                    MoralisApplication.session.performMethodCall(
+                        transaction
+                    ) {
+                        handleTransferResponse(it, moralisAuthCallback)
+                    }
+                    mTxRequest = id
+                    navigateToWallet(context)
                 }
                 TransferType.ERC721 -> {
                     // TODO: wait for walletconnect 2.0
@@ -92,8 +113,8 @@ class MoralisWeb3Transaction {
                 mTxRequest = null
                 Log.d(TAG, "Transfer done")
                 if (response.error != null) {
-                    Log.d(TAG, "Transaction error: ${response.error}")
-                    // TODO: .error!! right?
+                    Log.e(TAG, "Transaction error: ${response.error}")
+                    // TODO: analyze if ".error!!" is right.
                     moralisTransferCallback.onError(response.error!!.message)
                 } else {
                     moralisTransferCallback.onResponse(response.result)
@@ -139,9 +160,12 @@ class MoralisWeb3Transaction {
         class TransferObjectERC20(
             system: String = "evm",
             awaitReceipt: Boolean = true,
+            amountToTransfer: String,
             val contractAddress: String,
             receiver: String,
-        ) : TransferObject(TransferType.ERC20, system, awaitReceipt, receiver)
+        ) : TransferObject(TransferType.ERC20, system, awaitReceipt, receiver) {
+            val mAmount: String = MoralisUnitConverter.convertETHToWei(amountToTransfer)
+        }
 
         class TransferObjectERC721(
             system: String = "evm",

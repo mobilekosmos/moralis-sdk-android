@@ -106,9 +106,16 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
         }
 
         mMainBinding.transferButton.setOnClickListener {
-            val transferObj = MoralisWeb3Transaction.TransferObject.TransferObjectNATIVE(
+//            val transferObj = MoralisWeb3Transaction.TransferObject.TransferObjectNATIVE(
+//                amountToTransfer = "0.1",
+//                receiver = "0x24EdA4f7d0c466cc60302b9b5e9275544E5ba552"
+//            )
+            // Transfer token $Hedge
+            val transferObj = MoralisWeb3Transaction.TransferObject.TransferObjectERC20(
                 amountToTransfer = "0.1",
-                receiver = "0x24EdA4f7d0c466cc60302b9b5e9275544E5ba552"
+                receiver = "0x24EdA4f7d0c466cc60302b9b5e9275544E5ba552",
+                contractAddress = "0xe7784072fc769d8b7f8c0a3fa008722eef5dddd5"
+
             )
             val session = nullOnThrow { MoralisApplication.session }
             if (session == null) {
@@ -137,18 +144,21 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
         }
     }
 
-    private fun startTransfer(transferObj: MoralisWeb3Transaction.TransferObject.TransferObjectNATIVE) {
+    private fun startTransfer(transferObj: MoralisWeb3Transaction.TransferObject) {
         MoralisWeb3Transaction.transfer(
             transferObj,
             this@MainActivity,
             object : MoralisWeb3Transaction.MoralisTransferCallback {
                 override fun onError(message: String) {
-                    Log.d(TAG, "onError")
-                    //TODO("Not yet implemented")
+                    Log.e(TAG, "MoralisWeb3Transaction onError")
+                    // TODO: call launch directly in the Moralis class?
+                    mUiScope.launch {
+                        Toast.makeText(this@MainActivity, message, Toast.LENGTH_LONG).show()
+                    }
                 }
 
                 override fun onResponse(result: Any?) {
-                    Log.d(TAG, "onResponse")
+                    Log.d(TAG, "MoralisWeb3Transaction onResponse")
                     //TODO("Not yet implemented")
                 }
 
@@ -273,6 +283,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             mMainBinding.getBalanceButton.visibility = View.GONE
             mMainBinding.unlinkWalletButton.visibility = View.GONE
             mMainBinding.signUpEmailButton.visibility = View.VISIBLE
+            mMainBinding.linkWalletButton.visibility = View.GONE
         }
     }
 

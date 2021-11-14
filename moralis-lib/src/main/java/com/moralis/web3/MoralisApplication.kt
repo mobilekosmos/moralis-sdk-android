@@ -62,22 +62,27 @@ open class MoralisApplication : Application() {
         lateinit var config: Session.FullyQualifiedConfig
         lateinit var session: Session
 
-        fun resetSession(supportedWallets: Array<String>? = emptyArray(), chainId: Int? = 1) {
+        fun resetSession(chainId: Long? = null) {
             nullOnThrow { session }?.clearCallbacks()
             val key = ByteArray(32).also { Random().nextBytes(it) }.toNoPrefixHexString()
-            config = Session.FullyQualifiedConfig(UUID.randomUUID().toString(), "http://localhost:${BridgeServer.PORT}", key)
+            config = Session.FullyQualifiedConfig(
+                UUID.randomUUID().toString(),
+                "http://localhost:${BridgeServer.PORT}",
+                key
+            )
             // The walletConnect app freezes/crashes if "icons" in passed PeerMeta is not filled, so pass at least an empty list.
             session = WCSession(
-                    config,
-                    MoshiPayloadAdapter(moshi),
-                    storage,
-                    OkHttpTransport.Builder(client, moshi),
-                    Session.PeerMeta(
-                        url = appPackage,
-                        name = appName,
-                        description = appName,
-                        icons = listOf(),
-                    )
+                config,
+                MoshiPayloadAdapter(moshi),
+                storage,
+                OkHttpTransport.Builder(client, moshi),
+                Session.PeerMeta(
+                    url = appPackage,
+                    name = appName,
+                    description = appName,
+                    icons = listOf()
+                ),
+                _chainId = chainId
             )
             session.offer()
         }

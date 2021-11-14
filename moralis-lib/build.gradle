@@ -34,7 +34,7 @@ android {
 ext {
 //    moralisVersion = "moralis-SNAPSHOT"
     moralisVersion = "master-SNAPSHOT"
-    moralisWalletConnectVersion = "0.9.9.6"
+    moralisWalletConnectVersion = "0.9.9.8"
     //moralisVersion = "1"
     versions = [
             kotlin                    : "1.5.31",

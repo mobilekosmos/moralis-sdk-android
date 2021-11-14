@@ -1,9 +1,10 @@
 package com.moralis.web3
 
+
 class MoralisTransferUtils {
 
     companion object {
-        // TODO: "cons" only on primitive types allowd
+        // TODO: "cons" only on primitive types allowed
 //        private val supportedTypes = arrayOf("native", "erc20", "erc721", "erc1155")
 
         val ERC1155TransferABI = arrayOf(
