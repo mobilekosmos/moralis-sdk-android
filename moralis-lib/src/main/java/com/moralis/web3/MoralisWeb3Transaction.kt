@@ -55,14 +55,17 @@ class MoralisWeb3Transaction {
 
                 TransferType.ERC20 -> {
                     val obj = transferObject as TransferObject.TransferObjectERC20
+
+                    // Sends the "data" to the contractAddress, so we send the destination and amount
+                    // to the token contract.
                     val transaction = Session.MethodCall.SendTransaction(
                         id = id,
                         from = sender,
-                        to = obj.mTransactionReceiver,
+                        to = obj.contractAddress,
                         nonce = null, // Optional
                         gasPrice = null, // Optional
                         gasLimit = null, // Optional
-                        value = obj.mAmount,
+                        value = "0",
                         data = Web3TransactionUtils.encodeTransferData(
                             obj.mTransactionReceiver,
                             obj.mAmount.toBigInteger()
@@ -78,31 +81,57 @@ class MoralisWeb3Transaction {
                     navigateToWallet(context)
                 }
                 TransferType.ERC721 -> {
-                    // TODO: wait for walletconnect 2.0
+                    val obj = transferObject as TransferObject.TransferObjectERC721
+                    val transaction = Session.MethodCall.SendTransaction(
+                        id = id,
+                        from = sender,
+                        to = obj.contractAddress,
+                        nonce = null, // Optional
+                        gasPrice = null, // Optional
+                        gasLimit = null, // Optional
+                        value = "1",
+                        data = Web3TransactionUtils.encodeTransferERC721Data(
+                            sender,
+                            obj.mTransactionReceiver,
+                            obj.mTokenId
+                        )
+                    )
+                    // TODO: maybe use Sign Typed Data v4 instead?
+                    MoralisApplication.session.performMethodCall(
+                        transaction
+                    ) {
+                        handleTransferResponse(it, moralisAuthCallback)
+                    }
+                    mTxRequest = id
+                    navigateToWallet(context)
                 }
                 TransferType.ERC1155 -> {
-                    // TODO: wait for walletconnect 2.0
+                    val obj = transferObject as TransferObject.TransferObjectERC1155
+                    val transaction = Session.MethodCall.SendTransaction(
+                        id = id,
+                        from = sender,
+                        to = obj.contractAddress,
+                        nonce = null, // Optional
+                        gasPrice = null, // Optional
+                        gasLimit = null, // Optional
+                        value = "1",
+                        data = Web3TransactionUtils.encodeTransferERC1155Data(
+                            sender,
+                            obj.mTransactionReceiver,
+                            obj.mTokenId,
+                            obj.mAmount.toBigInteger()
+                        )
+                    )
+                    // TODO: maybe use Sign Typed Data v4 instead?
+                    MoralisApplication.session.performMethodCall(
+                        transaction
+                    ) {
+                        handleTransferResponse(it, moralisAuthCallback)
+                    }
+                    mTxRequest = id
+                    navigateToWallet(context)
                 }
             }
-
-//            if (awaitReceipt) return transferOperation;
-//
-//            transferOperation
-//                .on('transactionHash', hash => {
-//                    transferEvents.emit('transactionHash', hash);
-//                })
-//            .on('receipt', receipt => {
-//                transferEvents.emit('receipt', receipt);
-//            })
-//            .on('confirmation', (confirmationNumber, receipt) => {
-//                transferEvents.emit('confirmation', (confirmationNumber, receipt));
-//            })
-//            .on('error', error => {
-//                transferEvents.emit('error', error);
-//                throw error;
-//            });
-//
-//            return transferEvents;
         }
 
         private fun handleTransferResponse(
@@ -113,6 +142,9 @@ class MoralisWeb3Transaction {
                 mTxRequest = null
                 Log.d(TAG, "Transfer done")
                 if (response.error != null) {
+                    // metamask when running moralis web boilerplate: Error: execution reverted: Uni::_transferTokens: transfer amount exceeds balance
+                    // metamask on Android with Android SDK and USDT: message=invalid opcode: opcode 0xfe not defined)
+                    // metamask on Android with Android SDK: DAI: error: Error(code=-32000, message=execution reverted: Dai/insufficient-balance)
                     Log.e(TAG, "Transaction error: ${response.error}")
                     // TODO: analyze if ".error!!" is right.
                     moralisTransferCallback.onError(response.error!!.message)
@@ -139,18 +171,15 @@ class MoralisWeb3Transaction {
     sealed class TransferObject(
         val mType: TransferType,
         val mSystem: String = "evm",
-        val mAwaitReceipt: Boolean = true,
         val mTransactionReceiver: String
     ) {
         class TransferObjectNATIVE(
             system: String = "evm",
-            awaitReceipt: Boolean = true,
             amountToTransfer: String,
             receiver: String
-        ) : TransferObject(TransferType.NATIVE, system, awaitReceipt, receiver) {
+        ) : TransferObject(TransferType.NATIVE, system, receiver) {
             // does not work on TrustWallet if not converting to BigInteger.
             val mAmount: String = MoralisUnitConverter.convertETHToWei(amountToTransfer)
-
 //            val mAmount : String = MoralisUnitConverter.convertETHToWeiHex(amountToTransfer) // works on TrustWallet
 //            val mAmount : String = "0x5AF3107A4000" // works on TrustWallet
             //                        val mAmount = "5500000000000000000" // works on TrustWallet
@@ -159,28 +188,32 @@ class MoralisWeb3Transaction {
 
         class TransferObjectERC20(
             system: String = "evm",
-            awaitReceipt: Boolean = true,
             amountToTransfer: String,
             val contractAddress: String,
             receiver: String,
-        ) : TransferObject(TransferType.ERC20, system, awaitReceipt, receiver) {
+        ) : TransferObject(TransferType.ERC20, system, receiver) {
             val mAmount: String = MoralisUnitConverter.convertETHToWei(amountToTransfer)
         }
 
         class TransferObjectERC721(
             system: String = "evm",
-            awaitReceipt: Boolean = true,
             val contractAddress: String,
             receiver: String,
-        ) : TransferObject(TransferType.ERC721, system, awaitReceipt, receiver)
+            tokenId: Long
+        ) : TransferObject(TransferType.ERC721, system, receiver) {
+            val mTokenId: Long = tokenId
+        }
 
         class TransferObjectERC1155(
             system: String = "evm",
-            awaitReceipt: Boolean = true,
             val contractAddress: String,
+            amountToTransfer: String,
             receiver: String,
-            val tokenId: String,
-        ) : TransferObject(TransferType.ERC1155, system, awaitReceipt, receiver)
+            tokenId: Long,
+        ) : TransferObject(TransferType.ERC1155, system, receiver) {
+            val mTokenId: Long = tokenId
+            val mAmount = amountToTransfer
+        }
     }
 
     interface MoralisTransferCallback {

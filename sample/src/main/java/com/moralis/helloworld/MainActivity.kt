@@ -63,7 +63,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             // Press the sign button to create a new account using the wallet as ID.
             Moralis.authenticate(
                 this@MainActivity,
-                "Press sign to authenticate with your wallet."
+                "Press sign to authenticate with your wallet.",
             ) {
                 if (it != null) {
                     adaptUIAfterSessionApproved(it)
@@ -106,17 +106,39 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
         }
 
         mMainBinding.transferButton.setOnClickListener {
-//            val transferObj = MoralisWeb3Transaction.TransferObject.TransferObjectNATIVE(
-//                amountToTransfer = "0.1",
-//                receiver = "0x24EdA4f7d0c466cc60302b9b5e9275544E5ba552"
-//            )
-            // Transfer token $Hedge
-            val transferObj = MoralisWeb3Transaction.TransferObject.TransferObjectERC20(
-                amountToTransfer = "0.1",
-                receiver = "0x24EdA4f7d0c466cc60302b9b5e9275544E5ba552",
-                contractAddress = "0xe7784072fc769d8b7f8c0a3fa008722eef5dddd5"
-
+            val transferObj = MoralisWeb3Transaction.TransferObject.TransferObjectNATIVE(
+                amountToTransfer = "1",
+                receiver = "0x24EdA4f7d0c466cc60302b9b5e9275544E5ba552"
             )
+
+            val session = nullOnThrow { MoralisApplication.session }
+            if (session == null) {
+                Log.d(TAG, "Session expired!")
+                Toast.makeText(this@MainActivity, "Session expired!", Toast.LENGTH_LONG).show()
+                Moralis.authenticate(
+                    this@MainActivity,
+                    "Press sign to authenticate with your wallet."
+                ) {
+                    if (it != null) {
+                        adaptUIAfterSessionApproved(it)
+                        startTransfer(transferObj)
+                    }
+                }
+            } else {
+                startTransfer(transferObj)
+            }
+        }
+
+        mMainBinding.transferErc20Button.setOnClickListener {
+            // Using Ropsen Testnet and based on https://ethereum.stackexchange.com/questions/72388/does-rinkeby-have-a-faucet-where-i-can-fill-a-wallet-with-dai/80204
+            val transferObj = MoralisWeb3Transaction.TransferObject.TransferObjectERC20(
+                amountToTransfer = "0.0000001",
+                receiver = "0x24EdA4f7d0c466cc60302b9b5e9275544E5ba552",
+//                contractAddress = "0xdac17f958d2ee523a2206206994597c13d831ec7" // USDT
+//                contractAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // DAI
+                contractAddress = "0x1fe24f25b1cf609b9c4e7e12d802e3640dfa5e43" // CGG
+            )
+
             val session = nullOnThrow { MoralisApplication.session }
             if (session == null) {
                 Log.d(TAG, "Session expired!")
@@ -198,6 +220,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
         mMainBinding.connectWithWalletButton.visibility = View.GONE
         mMainBinding.logoutButton.visibility = View.VISIBLE
         mMainBinding.transferButton.visibility = View.VISIBLE
+        mMainBinding.transferErc20Button.visibility = View.VISIBLE
         mMainBinding.signUpEmailButton.visibility = View.GONE
     }
 
@@ -280,6 +303,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             mMainBinding.connectWithWalletButton.visibility = View.VISIBLE
             mMainBinding.logoutButton.visibility = View.GONE
             mMainBinding.transferButton.visibility = View.GONE
+            mMainBinding.transferErc20Button.visibility = View.GONE
             mMainBinding.getBalanceButton.visibility = View.GONE
             mMainBinding.unlinkWalletButton.visibility = View.GONE
             mMainBinding.signUpEmailButton.visibility = View.VISIBLE
