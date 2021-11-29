@@ -6,7 +6,7 @@
 <h2 align="center">Moralis SDK for Android (Unofficial)</h2>
 
 <p align="center">
-    A library that gives you access to the powerful Moralis Server backend from your native Android app. <a href="https://admin.moralis.io">Create Server Here</a>
+    An unofficial library that gives you access to the powerful Moralis Server backend from your native Android app. <a href="https://admin.moralis.io">Create Server Here</a>
 </p>
 
 <br>
