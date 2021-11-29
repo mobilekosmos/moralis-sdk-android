@@ -7,13 +7,13 @@
 
 <p align="center">
     An unofficial library that gives you access to the powerful Moralis Server backend from your native Android app. <a href="https://admin.moralis.io">Create Server Here</a>
-    
-    This library is not related to the Moralis team and thus not maintained by them.
 </p>
 
 <br>
 
 For more information on Moralis and its features, see [the website](https://moralis.io), [the JavaScript guide](https://docs.moralis.io), [the Cloud Code guide](https://docs.moralis.io/moralis-server/cloud-code) or [Web3 Reference](https://docs.moralis.io/moralis-server/web3-sdk/intro).
+
+This library is not related to the Moralis team and thus not maintained by them.
 
 ## Getting Started
 
