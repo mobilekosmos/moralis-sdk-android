@@ -28,3 +28,6 @@ This is a proof of work, not ready for production yet, work in progress.
 ⭐️ Star me: if you want this project to progress please star it, every star counts!
 
 For the "TODO" see the issues section.
+
+## Sample
+The sample includes a first draft of a working app that uses the native SDK showcasing a few functions.
