@@ -25,6 +25,4 @@ You can also use "master-SNAPSHOT" but this is not recommended, as the master is
 ## Disclaimer
 This is a proof of work, not ready for production yet, work in progress.
 
-⭐️ Star me
-
-If you want this project to progress please star it, every star counts!
+⭐️ Star me: if you want this project to progress please star it, every star counts!
