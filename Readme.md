@@ -7,6 +7,7 @@
 
 <p align="center">
     An unofficial library that gives you access to the powerful Moralis Server backend from your native Android app. <a href="https://admin.moralis.io">Create Server Here</a>
+    This library is not related to the Moralis team and thus not maintained by them.
 </p>
 
 <br>
