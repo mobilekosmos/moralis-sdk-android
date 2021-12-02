@@ -17,12 +17,34 @@ For more information on Moralis and its features, see [the website](https://mora
 
 ## Getting Started
 
-The easiest way to integrate the Moralis SDK into your Android project is through adding the dependency to your buid.gradle file:
-
-    implementation 'com.github.mobilekosmos:moralis-sdk-android:<Tag>'
-
+1. The easiest way to integrate the Moralis SDK into your Android project is through adding the dependency to your buid.gradle file:
+      ```implementation 'com.github.mobilekosmos:moralis-sdk-android:<Tag>'```
 where '< Tag >' is the latest released version on Github, please check.
 You can also use "master-SNAPSHOT" but this is not recommended, as the master is not approved for production.
+
+2. Add following line to your manifest.xml in the application tag:
+```android:networkSecurityConfig="@xml/network_config"```
+This is currently needed by the WalletConnect integration, but hopefully we can rid of it in the final version.
+    
+3. Extend your application class from "MoralisApplication" and Call ```Moralis.start(APP_ID, SERVER_URL, applicationContext)```, like this:
+```
+    const val APP_ID = "xyz"
+    const val SERVER_URL = "https://asdcyx.grandmoralis.com:2053/server"
+    class App: MoralisApplication() {
+        override fun onCreate() {
+            super.onCreate()
+            Moralis.start(APP_ID, SERVER_URL, this)
+        }
+    }
+ ``` 
+This is needed because the Moralis SDK must be aware of Android's activity lifecycle to be able to work.
+    
+4. Extend your authenticating Activity from Moralis.MoralisAuthenticationCallback
+5. Call ```Moralis.onStart(this)``` and ```Moralis.onDestroy(this)``` in the respectives lifecycle callbacks.
+    
+Check the MainActivity class in the Sample to see a working example.
+
+*Feel free to make Pull Requests to simplify the needed steps.
 
 ## Disclaimer
 This is a proof of work, not ready for production yet, work in progress.
