@@ -47,7 +47,7 @@ Check the MainActivity class in the Sample to see a working example.
 *Feel free to make Pull Requests to simplify the needed steps.
 
 ## Disclaimer
-This is a proof of work, not ready for production yet, work in progress.
+This is a proof of concept, not ready for production yet, work in progress.
 
 ⭐️ Star me: if you want this project to progress please star it, every star counts!
 
