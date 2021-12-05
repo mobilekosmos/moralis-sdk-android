@@ -32,23 +32,22 @@ android {
 }
 
 ext {
-//    moralisVersion = "moralis-SNAPSHOT"
     moralisVersion = "master-SNAPSHOT"
-    moralisWalletConnectVersion = "0.9.9.8"
     //moralisVersion = "1"
+    moralisWalletConnectVersion = "0.9.9.8"
+    retrofitVersion = '2.9.0'
     versions = [
             kotlin                    : "1.5.31",
             moshi                     : '1.12.0',
             okhttp                    : '4.9.1',
             khex                      : '1.1.2'
     ]
-    retrofitVersion = '2.9.0'
 }
 
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
     api files('libs/moralis-web3api-client-kotlin-1.0.0.jar')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
