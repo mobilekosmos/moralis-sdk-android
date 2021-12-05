@@ -54,6 +54,8 @@ Find the [TODO list here](https://github.com/mobilekosmos/moralis-sdk-android/is
 ## Sample
 The sample includes a first draft of a working app that uses the native SDK showcasing a few functions.
 
+Sample videos:
+
 [<img src="https://img.youtube.com/vi/QYApykZJjko/maxresdefault.jpg" width="50%">](https://youtu.be/QYApykZJjko)
 [<img src="https://img.youtube.com/vi/UXMPpFu81Zc/maxresdefault.jpg" width="50%">](https://youtu.be/UXMPpFu81Zc)
 [<img src="https://img.youtube.com/vi/4VDuw0DGszQ/maxresdefault.jpg" width="50%">](https://youtu.be/4VDuw0DGszQ)
