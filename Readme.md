@@ -24,7 +24,7 @@ You can also use "master-SNAPSHOT" but this is not recommended, as the master is
 
 2. Add following line to your manifest.xml in the application tag:
 ```android:networkSecurityConfig="@xml/network_config"```
-This is currently needed by the WalletConnect integration, but hopefully we can rid of it in the final version.
+This is currently needed by the WalletConnect integration, but hopefully we can get rid of it in the final version.
     
 3. Extend your application class from "MoralisApplication" and Call ```Moralis.start(APP_ID, SERVER_URL, applicationContext)```, like this:
 ```
