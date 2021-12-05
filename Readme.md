@@ -44,8 +44,6 @@ This is needed because the Moralis SDK must be aware of Android's activity lifec
     
 Check the MainActivity class in the Sample to see a working example.
 
-*Feel free to make Pull Requests to simplify the needed steps.
-
 ## Disclaimer
 This is a proof of concept, not ready for production yet, work in progress.
 
