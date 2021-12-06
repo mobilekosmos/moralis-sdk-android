@@ -1,15 +1,21 @@
-<p align="center">
+[![CI](https://github.com/mobilekosmos/moralis-sdk-android/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/mobilekosmos/moralis-sdk-android/actions/workflows/main.yml)
+[![Known Vulnerabilities](https://snyk.io/test/github/mobilekosmos/moralis-sdk-android/badge.svg)](https://snyk.io/test/github/mobilekosmos/moralis-sdk-android)
+[![codecov](https://codecov.io/gh/mobilekosmos/moralis-sdk-android/branch/master/graph/badge.svg)](https://codecov.io/gh/mobilekosmos/moralis-sdk-android)
+[![android min api](https://img.shields.io/badge/Android_API->=28-66c718.svg)](https://github.com/parse-community/parse-dashboard/releases)
+[![](https://jitpack.io/v/mobilekosmos/moralis-sdk-android.svg)](https://jitpack.io/#mobilekosmos/moralis-sdk-android)
+[![](https://jitpack.io/v/mobilekosmos/moralis-sdk-android/month.svg)](https://jitpack.io/#mobilekosmos/moralis-sdk-android)
+
+<br>
+<p>
     <a href="https://moralis.io">
     <img width="132" height="101" src="https://moralis.io/wp-content/uploads/2021/01/logo.png" class="attachment-full size-full" alt="Moralis Build Serverless web3 apps" loading="lazy" /></a>
 </p>
 
-<h2 align="center">Moralis SDK for Android (Unofficial)</h2>
+<h2>Moralis SDK for Android (Unofficial)</h2>
 
-<p align="center">
+<p>
     An unofficial library that gives you access to the powerful Moralis Server backend from your native Android app. <a href="https://admin.moralis.io">Create Server Here</a>
 </p>
-
-<br>
 
 For more information on Moralis and its features, see [the website](https://moralis.io), [the JavaScript guide](https://docs.moralis.io), [the Cloud Code guide](https://docs.moralis.io/moralis-server/cloud-code) or [Web3 Reference](https://docs.moralis.io/moralis-server/web3-sdk/intro).
 
@@ -24,7 +30,7 @@ You can also use "master-SNAPSHOT" but this is not recommended, as the master is
 
 2. Add following line to your manifest.xml in the application tag:
 ```android:networkSecurityConfig="@xml/network_config"```
-This is currently needed by the WalletConnect integration, but hopefully we can rid of it in the final version.
+This is currently needed by the WalletConnect integration, but hopefully we can get rid of it in the final version.
     
 3. Extend your application class from "MoralisApplication" and Call ```Moralis.start(APP_ID, SERVER_URL, applicationContext)```, like this:
 ```
@@ -44,8 +50,6 @@ This is needed because the Moralis SDK must be aware of Android's activity lifec
     
 Check the MainActivity class in the Sample to see a working example.
 
-*Feel free to make Pull Requests to simplify the needed steps.
-
 ## Disclaimer
 This is a proof of concept, not ready for production yet, work in progress.
 
@@ -55,3 +59,9 @@ Find the [TODO list here](https://github.com/mobilekosmos/moralis-sdk-android/is
 
 ## Sample
 The sample includes a first draft of a working app that uses the native SDK showcasing a few functions.
+
+Sample videos:
+
+[<img src="https://img.youtube.com/vi/QYApykZJjko/maxresdefault.jpg" width="50%">](https://youtu.be/QYApykZJjko)
+[<img src="https://img.youtube.com/vi/UXMPpFu81Zc/maxresdefault.jpg" width="50%">](https://youtu.be/UXMPpFu81Zc)
+[<img src="https://img.youtube.com/vi/4VDuw0DGszQ/maxresdefault.jpg" width="50%">](https://youtu.be/4VDuw0DGszQ)
