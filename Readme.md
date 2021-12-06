@@ -1,5 +1,6 @@
 [![CI](https://github.com/mobilekosmos/moralis-sdk-android/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/mobilekosmos/moralis-sdk-android/actions/workflows/main.yml)
 [![Known Vulnerabilities](https://snyk.io/test/github/mobilekosmos/moralis-sdk-android/badge.svg)](https://snyk.io/test/github/mobilekosmos/moralis-sdk-android)
+[![codecov](https://codecov.io/gh/mobilekosmos/moralis-sdk-android/branch/master/graph/badge.svg)](https://codecov.io/gh/mobilekosmos/moralis-sdk-android)
 
 <p align="center">
     <a href="https://moralis.io">
