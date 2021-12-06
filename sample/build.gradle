@@ -33,6 +33,7 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
+        jvmTarget = '11'
         useIR = true
     }
     buildFeatures {
@@ -57,14 +58,15 @@ android {
 dependencies {
 
     implementation project(path: ':moralis-lib')
-    // Use this dependency in your project instead of above:
+    // Use following dependency in your project instead of above:
     //implementation 'com.github.mobilekosmos:moralis-sdk-android:<Tag>'
+//    implementation 'com.github.mobilekosmos:moralis-sdk-android:master-SNAPSHOT'
     // where <Tag> is the latest released version on Github, please check
     // You can also use "master-SNAPSHOT" but this is not recommended, as the master
     // is not approved for production.
 
     implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
     testImplementation 'junit:junit:4.13.2'
