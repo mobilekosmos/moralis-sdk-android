@@ -40,6 +40,12 @@ jobs:
         with:
           arguments: build
           
+      - name: Archive test report
+        uses: actions/upload-artifact@v2
+        with:
+          name: Test report
+          path: build/reports/tests/test
+          
       # Runs a set of commands using the runners shell
       #- name: Build app
       #  run: |
