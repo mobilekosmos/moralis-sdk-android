@@ -28,12 +28,16 @@ jobs:
       # Runs a single command using the runners shell
       #- name: Run a one-line script
       #  run: echo Hello, world!
-
+          
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
       
+      - uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
+          
       # Runs a set of commands using the runners shell
-      - name: Build app
-        run: |
-          echo Gradle buil started...
-          ./gradlew build
+      #- name: Build app
+      #  run: |
+      #    echo Gradle buil started...
+      #    ./gradlew build --no-daemon
