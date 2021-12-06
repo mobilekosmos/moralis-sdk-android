@@ -26,9 +26,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
 }
 
 ext {
@@ -37,7 +34,7 @@ ext {
     moralisWalletConnectVersion = "0.9.9.8"
     retrofitVersion = '2.9.0'
     versions = [
-            kotlin                    : "1.5.31",
+            kotlin                    : "1.6.0",
             moshi                     : '1.12.0',
             okhttp                    : '4.9.1',
             khex                      : '1.1.2'

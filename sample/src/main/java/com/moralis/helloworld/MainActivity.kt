@@ -209,18 +209,20 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             mMainBinding.linkWalletButton.visibility = View.VISIBLE
             mMainBinding.unlinkWalletButton.visibility = View.GONE
             mMainBinding.getBalanceButton.visibility = View.GONE
+            mMainBinding.transferButton.visibility = View.GONE
+            mMainBinding.transferErc20Button.visibility = View.GONE
         } else {
             mMainBinding.linkWalletButton.visibility = View.GONE
             mMainBinding.unlinkWalletButton.visibility = View.VISIBLE
             mMainBinding.getBalanceButton.visibility = View.VISIBLE
+            mMainBinding.transferButton.visibility = View.VISIBLE
+            mMainBinding.transferErc20Button.visibility = View.VISIBLE
         }
         mMainBinding.textView.text =
             "Connected wallet:\n $ethAddress \n\n Username:\n ${moralisUser.username}"
         mMainBinding.textView.visibility = View.VISIBLE
         mMainBinding.connectWithWalletButton.visibility = View.GONE
         mMainBinding.logoutButton.visibility = View.VISIBLE
-        mMainBinding.transferButton.visibility = View.VISIBLE
-        mMainBinding.transferErc20Button.visibility = View.VISIBLE
         mMainBinding.signUpEmailButton.visibility = View.GONE
     }
 
