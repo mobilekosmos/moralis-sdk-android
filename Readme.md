@@ -41,7 +41,6 @@ The recommended place to initialize the SDK is in your application class to make
         }
     }
  ``` 
-This is needed because the Moralis SDK must be aware of Android's activity lifecycle to be able to work.
     
 3. Attach to the app's lifecycle:
 Call ```Moralis.onStart(this)``` and ```Moralis.onDestroy(this)``` in the respectives lifecycle callbacks.
