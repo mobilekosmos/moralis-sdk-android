@@ -51,7 +51,6 @@ open class Moralis {
          * to select from.
          */
         fun authenticate(
-            context: Context,
             signingMessage: String?,
             authenticationType: MoralisAuthentication = MoralisAuthentication.Ethereum,
             supportedWallets: Array<String> = emptyArray(),
@@ -64,7 +63,6 @@ open class Moralis {
                 MoralisAuthentication.Elrond -> MoralisElrond.authenticate()
                 MoralisAuthentication.Ethereum -> authenticate(
                     signingMessage,
-                    context,
                     supportedWallets,
                     chainId,
                     moralisAuthCallback
@@ -74,7 +72,6 @@ open class Moralis {
 
         private fun authenticate(
             signingMessage: String?,
-            context: Context,
             supportedWallets: Array<String>,
             chainId: Long? = null,
             moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit
@@ -93,7 +90,6 @@ open class Moralis {
                             Log.d(TAG, "onStatus Session Approved")
                             handleSessionApproved(
                                 moralisAuthCallback,
-                                context,
                                 data
                             )
                         }
@@ -103,7 +99,7 @@ open class Moralis {
                         }
                         Session.Status.Connected -> {
                             Log.d(TAG, "onStatus Session Connected")
-                            requestConnectionToWallet(context, supportedWallets)
+                            requestConnectionToWallet(supportedWallets)
                         }
                         Session.Status.Disconnected -> {
                             Log.d(TAG, "onStatus Session Disconnected")
@@ -299,12 +295,12 @@ open class Moralis {
          * Sends an intent to the OS with the intention of opening a wallet that can handle the
          * authentication.
          */
-        private fun requestConnectionToWallet(context: Context, supportedWallets: Array<String>) {
+        private fun requestConnectionToWallet(supportedWallets: Array<String>) {
             Log.d(TAG, "requestConnectionToWallet")
-            val i = Intent(Intent.ACTION_VIEW)
-            i.data = Uri.parse(MoralisApplication.config.toWCUri())
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(MoralisApplication.config.toWCUri())
             try {
-                context.startActivity(i)
+                MoralisApplication.getContext().startActivity(intent)
             } catch (e: ActivityNotFoundException) {
                 // Define what your app should do if no activity can handle the intent.
                 // TODO
@@ -316,12 +312,11 @@ open class Moralis {
          */
         private fun handleSessionApproved(
             moralisAuthCallback: (result: MoralisUser?) -> Unit,
-            context: Context,
             signingMessage: String
         ) {
             Log.d(TAG, "handleSessionApproved")
             mUiScope.launch {
-                signUpToMoralis(moralisAuthCallback, context, signingMessage)
+                signUpToMoralis(moralisAuthCallback, signingMessage)
                 Log.d(TAG, "Connected:  ${MoralisApplication.session.approvedAccounts()}")
             }
         }
@@ -335,7 +330,6 @@ open class Moralis {
 
         private fun signUpToMoralis(
             moralisAuthCallback: (result: MoralisUser?) -> Unit,
-            context: Context,
             signingMessage: String
         ) {
             val accounts = MoralisApplication.session.approvedAccounts() ?: return

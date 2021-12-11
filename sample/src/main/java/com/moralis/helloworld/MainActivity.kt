@@ -62,11 +62,10 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             // Press sign to authenticate with your wallet.
             // Press the sign button to create a new account using the wallet as ID.
             Moralis.authenticate(
-                this@MainActivity,
                 "Press sign to authenticate with your wallet.",
-            ) {
-                if (it != null) {
-                    adaptUIAfterSessionApproved(it)
+            ) { user ->
+                if (user != null) {
+                    adaptUIAfterSessionApproved(user)
                 }
             }
         }
@@ -78,7 +77,6 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
 
         mMainBinding.linkWalletButton.setOnClickListener {
             Moralis.authenticate(
-                this@MainActivity,
                 "Press sign to authenticate with your wallet."
             ) {
                 if (it != null) {
@@ -116,7 +114,6 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
                 Log.d(TAG, "Session expired!")
                 Toast.makeText(this@MainActivity, "Session expired!", Toast.LENGTH_LONG).show()
                 Moralis.authenticate(
-                    this@MainActivity,
                     "Press sign to authenticate with your wallet."
                 ) {
                     if (it != null) {
@@ -144,7 +141,6 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
                 Log.d(TAG, "Session expired!")
                 Toast.makeText(this@MainActivity, "Session expired!", Toast.LENGTH_LONG).show()
                 Moralis.authenticate(
-                    this@MainActivity,
                     "Press sign to authenticate with your wallet."
                 ) {
                     if (it != null) {

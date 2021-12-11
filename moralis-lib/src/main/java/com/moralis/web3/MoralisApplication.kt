@@ -1,6 +1,7 @@
 package com.moralis.web3
 
 import android.app.Application
+import android.content.Context
 import com.moralis.web3.walletconnect.server.BridgeServer
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -15,6 +16,7 @@ import java.util.*
 open class MoralisApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        mInstance = this
         init()
     }
 
@@ -49,6 +51,7 @@ open class MoralisApplication : Application() {
     }
 
     companion object {
+        lateinit var mInstance: MoralisApplication
         private lateinit var client: OkHttpClient
         private lateinit var moshi: Moshi
         private lateinit var bridge: BridgeServer
@@ -85,6 +88,10 @@ open class MoralisApplication : Application() {
                 _chainId = chainId
             )
             session.offer()
+        }
+
+        fun getContext(): Context {
+            return mInstance.applicationContext
         }
     }
 }
