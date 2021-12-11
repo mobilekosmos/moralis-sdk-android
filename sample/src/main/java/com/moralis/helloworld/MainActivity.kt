@@ -62,7 +62,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             // Press sign to authenticate with your wallet.
             // Press the sign button to create a new account using the wallet as ID.
             Moralis.authenticate(
-                "Press sign to authenticate with your wallet.",
+                "Press the sign button to authenticate with your wallet.",
             ) { user ->
                 if (user != null) {
                     adaptUIAfterSessionApproved(user)
