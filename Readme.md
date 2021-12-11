@@ -35,7 +35,7 @@ You can also use "master-SNAPSHOT" but this is not recommended, as the master is
     class App: MoralisApplication() {
         override fun onCreate() {
             super.onCreate()
-            Moralis.start(APP_ID, SERVER_URL, this)
+            Moralis.start(APP_ID, SERVER_URL)
         }
     }
  ``` 
