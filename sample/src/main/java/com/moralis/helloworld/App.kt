@@ -10,6 +10,6 @@ class App: MoralisApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        Moralis.start(APP_ID, SERVER_URL, this)
+        Moralis.start(APP_ID, SERVER_URL)
     }
 }

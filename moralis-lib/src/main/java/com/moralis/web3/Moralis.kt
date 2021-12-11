@@ -31,8 +31,8 @@ open class Moralis {
         private val mUiScope = CoroutineScope(Dispatchers.Main)
         private var mTxRequest: Long? = null
 
-        fun start(appId: String, serverURL: String, applicationContext: Context) {
-            initializeParse(appId, serverURL, applicationContext)
+        fun start(appId: String, serverURL: String) {
+            initializeParse(appId, serverURL, MoralisApplication.getContext())
         }
 
         private fun initializeParse(appId: String, serverURL: String, applicationContext: Context) {
@@ -47,17 +47,21 @@ open class Moralis {
         /**
          * Signs in or up a user onto the Moralis Server.
          *
-         * @param supportedWallets Only supported on iOS. The list fo wallets to offer the user
-         * to select from.
+         * @param signingMessage (Optional) The signing message that the Wallet will show to the user. Optional, if not given a standard message
+         * defined by Moralis will be used.
+         * @param authenticationType(Optional) If not given the default authentication is on Ethereum. See {@link #Moralis.MoralisAuthentication}.
+         * @param supportedWallets (Optional) Only supported on iOS. The list fo wallets to offer the user to select from.
+         * @param chainId (Optional) You might want to specify the chain id that WalletConnect will use by default. Currently the this may be ignored
+         * by the selected wallet.
+         * @param moralisAuthCallback The lambda that receives a MoralisUser object upon successful authentication.
          */
         fun authenticate(
-            signingMessage: String?,
+            signingMessage: String = getSigningData(),
             authenticationType: MoralisAuthentication = MoralisAuthentication.Ethereum,
             supportedWallets: Array<String> = emptyArray(),
             chainId: Long? = null,
             moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit,
         ) {
-            // TODO: use chainId and supportedWallets
             when (authenticationType) {
                 MoralisAuthentication.Polkadot -> MoralisPolkadot.authenticate()
                 MoralisAuthentication.Elrond -> MoralisElrond.authenticate()
@@ -71,17 +75,13 @@ open class Moralis {
         }
 
         private fun authenticate(
-            signingMessage: String?,
+            signingMessage: String,
             supportedWallets: Array<String>,
             chainId: Long? = null,
             moralisAuthCallback: (moralisUser: MoralisUser?) -> Unit
         ) {
             // Starts a new connection to the bridge server and waits for a wallet to connect.
             MoralisApplication.resetSession(chainId)
-
-            // If a custom signing message for the wallet signature prompt was not provided use
-            // a default one.
-            val data = signingMessage ?: getSigningData()
 
             mCallback = object : Session.Callback {
                 override fun onStatus(status: Session.Status) {
@@ -90,7 +90,7 @@ open class Moralis {
                             Log.d(TAG, "onStatus Session Approved")
                             handleSessionApproved(
                                 moralisAuthCallback,
-                                data
+                                signingMessage
                             )
                         }
                         Session.Status.Closed -> {
@@ -461,8 +461,14 @@ open class Moralis {
             MoralisUser.logOut()
         }
 
+        /**
+         * The message that the signing Wallet will show to the user while connecting to it.
+         *
+         * @see <a href="https://docs.moralis.io/moralis-server/users/crypto-login#changing-sign-in-message">https://docs.moralis.io/moralis-server/users/crypto-login#changing-sign-in-message</a>
+         */
         fun getSigningData(): String {
-            return "Authentication Interface"
+//            return "Authentication Interface"
+            return MoralisApplication.getContext().getString(R.string.signing_message)
         }
 
         fun handleMoralisError(err: Errors) {

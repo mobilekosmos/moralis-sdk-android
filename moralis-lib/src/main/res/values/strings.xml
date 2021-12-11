@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="signing_message">Press the sign button to authenticate with your wallet.</string>
+</resources>
