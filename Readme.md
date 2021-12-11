@@ -32,14 +32,14 @@ You can also use "master-SNAPSHOT" but this is not recommended, as the master is
 ```android:networkSecurityConfig="@xml/network_config"```
 This is currently needed by the WalletConnect integration, but hopefully we can get rid of it in the final version.
     
-3. Extend your application class from "MoralisApplication" and Call ```Moralis.start(APP_ID, SERVER_URL, applicationContext)```, like this:
+3. Extend your application class from "MoralisApplication" and Call ```Moralis.start(APP_ID, SERVER_URL)```, like this:
 ```
     const val APP_ID = "xyz"
     const val SERVER_URL = "https://asdcyx.grandmoralis.com:2053/server"
     class App: MoralisApplication() {
         override fun onCreate() {
             super.onCreate()
-            Moralis.start(APP_ID, SERVER_URL, this)
+            Moralis.start(APP_ID, SERVER_URL)
         }
     }
  ``` 
