@@ -22,10 +22,10 @@ class MainActivityBone : Activity(), Moralis.MoralisAuthenticationCallback {
 
         Moralis.start(
             "TlygdyM0oqw39Qej6J0lAOppcrNAe2sA1FfZijQQ",
-            "https://zda0u2csr0us.grandmoralis.com:2053/server", applicationContext
+            "https://zda0u2csr0us.grandmoralis.com:2053/server"
         )
 
-        Moralis.authenticate(this, "Authentication") {
+        Moralis.authenticate() {
             Log.d(TAG, "User: " + it?.username)
         }
 
