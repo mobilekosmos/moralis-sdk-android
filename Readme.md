@@ -28,7 +28,7 @@ For more information on Moralis and its features, see [the website](https://mora
 where '< Tag >' is the latest released version on Github, please check.
 You can also use "master-SNAPSHOT" but this is not recommended, as the master is not approved for production.
     
-3. Extend your application class from "MoralisApplication" and Call ```Moralis.start(APP_ID, SERVER_URL, applicationContext)```, like this:
+2. Extend your application class from "MoralisApplication" and Call ```Moralis.start(APP_ID, SERVER_URL, applicationContext)```, like this:
 ```
     const val APP_ID = "xyz"
     const val SERVER_URL = "https://asdcyx.grandmoralis.com:2053/server"
@@ -41,8 +41,8 @@ You can also use "master-SNAPSHOT" but this is not recommended, as the master is
  ``` 
 This is needed because the Moralis SDK must be aware of Android's activity lifecycle to be able to work.
     
-4. Extend your authenticating Activity from Moralis.MoralisAuthenticationCallback
-5. Call ```Moralis.onStart(this)``` and ```Moralis.onDestroy(this)``` in the respectives lifecycle callbacks.
+3. Extend your authenticating Activity from Moralis.MoralisAuthenticationCallback
+4. Call ```Moralis.onStart(this)``` and ```Moralis.onDestroy(this)``` in the respectives lifecycle callbacks.
     
 Check the MainActivity class in the Sample to see a working example.
 
