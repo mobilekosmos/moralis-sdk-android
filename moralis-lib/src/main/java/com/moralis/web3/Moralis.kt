@@ -3,6 +3,7 @@ package com.moralis.web3
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
 import android.util.Log
 import com.parse.*
@@ -299,6 +300,7 @@ open class Moralis {
             Log.d(TAG, "requestConnectionToWallet")
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse(MoralisApplication.config.toWCUri())
+            intent.addFlags(FLAG_ACTIVITY_NEW_TASK)
             try {
                 MoralisApplication.getContext().startActivity(intent)
             } catch (e: ActivityNotFoundException) {
