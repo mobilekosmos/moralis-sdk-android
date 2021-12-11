@@ -32,8 +32,14 @@ open class Moralis {
         private val mUiScope = CoroutineScope(Dispatchers.Main)
         private var mTxRequest: Long? = null
 
-        fun start(appId: String, serverURL: String) {
-            initializeParse(appId, serverURL, MoralisApplication.getContext())
+        /**
+         * Initializes the SDK.
+         *
+         * @param moralisServerAppId The Application ID of your Moralis Server.
+         * @param moralisServerURL The Server URL of your Moralis Server.
+         */
+        fun start(moralisServerAppId: String, moralisServerURL: String) {
+            initializeParse(moralisServerAppId, moralisServerURL, MoralisApplication.getContext())
         }
 
         private fun initializeParse(appId: String, serverURL: String, applicationContext: Context) {

@@ -42,8 +42,6 @@ class MainActivityBone : Activity(), Moralis.MoralisAuthenticationCallback {
         super.onDestroy()
     }
 
-    // TODO Log.e("Moralis", "onStatus Error:" + status.throwable.localizedMessage)
-
     override fun onConnect(accounts: List<String>?) {
         Log.d(TAG, "onConnect")
         TODO("Not yet implemented")
