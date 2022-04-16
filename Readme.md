@@ -14,7 +14,7 @@
 <h2>Moralis Kotlin SDK for Android (Unofficial)</h2>
 
 <p>
-    An unofficial library that gives you access to the powerful Moralis Server backend from your native Android app. <a href="https://admin.moralis.io">Create Server Here</a>
+    An unofficial library that gives you access to the powerful Moralis Server backend from your native Android app.
 </p>
 
 For more information on Moralis and its features, see [the website](https://moralis.io) or [the documentation](https://docs.moralis.io).
