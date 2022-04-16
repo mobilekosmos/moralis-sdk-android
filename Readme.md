@@ -21,6 +21,9 @@ For more information on Moralis and its features, see [the website](https://mora
 
 **This library is not related to the Moralis team and thus not maintained by them.**
 
+## Motivation
+Kotlin is the Android native language by excellence and the only one that allows to achieve the best app quality possible, nor Flutter, Reactive Native, Ionic, etc. can provide comparable performance, memory and space consumption, availability of native APIs and overall stability. Furthermore Kotlin will provide cross plattform capabilities in the near future, dropping the need of JS for web, thus the odds of Kotlin being the language by excellence for native cross plattform development are very good.
+
 ## Getting Started
 
 1. Add the SDK:
