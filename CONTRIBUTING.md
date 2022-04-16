@@ -1,3 +1,8 @@
+(*********************DRAFT***********************************)
+(*********************DRAFT***********************************)
+(*********************DRAFT***********************************)
+(*********************DRAFT***********************************)
+
 # Contributing to Parse SDK for Android
 We want to make contributing to this project as easy and transparent as possible.
 
