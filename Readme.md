@@ -11,7 +11,7 @@
     <img width="132" height="101" src="https://moralis.io/wp-content/uploads/2021/01/logo.png" class="attachment-full size-full" alt="Moralis Build Serverless web3 apps" loading="lazy" /></a>
 </p>
 
-<h2>Moralis SDK for Android (Unofficial)</h2>
+<h2>Moralis Kotlin SDK for Android (Unofficial)</h2>
 
 <p>
     An unofficial library that gives you access to the powerful Moralis Server backend from your native Android app. <a href="https://admin.moralis.io">Create Server Here</a>
