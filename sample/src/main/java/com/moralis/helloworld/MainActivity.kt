@@ -55,7 +55,7 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             setLoggedInUI(it)
         }
 
-        //val button = findViewById<Button>(R.id.login_button)
+        //val button = findViewById<Button>(R.id.login_button)h
         mMainBinding.connectWithWalletButton.setOnClickListener {
 
             // TODO: think about best signingMessage. Get string from res.
@@ -66,6 +66,8 @@ class MainActivity : Activity(), Moralis.MoralisAuthenticationCallback {
             ) { user ->
                 if (user != null) {
                     adaptUIAfterSessionApproved(user)
+                } else {
+                    Log.e(TAG, "user null, server may be down.")
                 }
             }
         }

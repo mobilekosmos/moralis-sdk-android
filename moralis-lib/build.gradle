@@ -36,6 +36,7 @@ ext {
     //moralisVersion = "1"
     moralisWalletConnectVersion = "0.9.9.8"
     retrofitVersion = '2.9.0'
+    parseVersion = '3.0.0'
     versions = [
             kotlin                    : "1.6.0",
             moshi                     : '1.12.0',
@@ -47,14 +48,14 @@ ext {
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
     api files('libs/moralis-web3api-client-kotlin-1.0.0.jar')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    api "com.github.mobilekosmos.Parse-SDK-Android:parse:$moralisVersion"
+    api "com.github.parse-community.Parse-SDK-Android:parse:$parseVersion"
     api "com.github.mobilekosmos:kotlin-walletconnect-lib:$moralisWalletConnectVersion"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
 
     // Needed for wallet-connect-code
     //------------------------------------------------------------------------
@@ -69,8 +70,8 @@ dependencies {
 
     implementation "com.squareup.okhttp3:okhttp:$versions.okhttp"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
 
     // We need to specify this extra because the kotlin plugin adds an older version leading
     // to a warning about using different kotlin versions.
