@@ -5,7 +5,7 @@
 [![](https://jitpack.io/v/mobilekosmos/moralis-sdk-android.svg)](https://jitpack.io/#mobilekosmos/moralis-sdk-android)
 [![](https://jitpack.io/v/mobilekosmos/moralis-sdk-android/month.svg)](https://jitpack.io/#mobilekosmos/moralis-sdk-android)
 
-** Repository archived, new development will occur here https://github.com/Blocklin/blockchain-kotlin-sdk/**
+**Repository archived, new development will occur here https://github.com/Blocklin/blockchain-kotlin-sdk/**
 <br>
 <p>
     <a href="https://moralis.io">
