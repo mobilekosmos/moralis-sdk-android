@@ -4,8 +4,10 @@
 [![android min api](https://img.shields.io/badge/Android_API->=28-66c718.svg)](https://github.com/parse-community/parse-dashboard/releases)
 [![](https://jitpack.io/v/mobilekosmos/moralis-sdk-android.svg)](https://jitpack.io/#mobilekosmos/moralis-sdk-android)
 [![](https://jitpack.io/v/mobilekosmos/moralis-sdk-android/month.svg)](https://jitpack.io/#mobilekosmos/moralis-sdk-android)
-
+<br>
+<br>
 **Repository archived, new development will occur here https://github.com/Blocklin/blockchain-kotlin-sdk/**
+<br>
 <br>
 <p>
     <a href="https://moralis.io">
